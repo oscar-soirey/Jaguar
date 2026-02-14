@@ -577,8 +577,8 @@ namespace jaguar { namespace parser {
         {
           switch (yyn)
             {
-  case 2: // statement: int_expr ';'
-#line 75 "src/parser/jaguar.y"
+  case 2: // statement: int_expr SEMICOLON
+#line 91 "src/parser/jaguar.y"
     {
       driver.result = (yystack_[1].value.ival);
     }
@@ -586,19 +586,19 @@ namespace jaguar { namespace parser {
     break;
 
   case 6: // int_expr: L_INT
-#line 87 "src/parser/jaguar.y"
+#line 103 "src/parser/jaguar.y"
           { (yylhs.value.ival) = (yystack_[0].value.ival); }
 #line 592 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
     break;
 
   case 7: // int_expr: int_expr PLUS int_expr
-#line 88 "src/parser/jaguar.y"
+#line 104 "src/parser/jaguar.y"
                            { (yylhs.value.ival) = (yystack_[2].value.ival) + (yystack_[0].value.ival); }
 #line 598 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
     break;
 
   case 8: // int_expr: int_expr MINUS int_expr
-#line 89 "src/parser/jaguar.y"
+#line 105 "src/parser/jaguar.y"
                             { (yylhs.value.ival) = (yystack_[2].value.ival) - (yystack_[0].value.ival); }
 #line 604 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
     break;
@@ -785,8 +785,9 @@ namespace jaguar { namespace parser {
     {
     "end of file", "error", "invalid token", "PLUS", "MINUS", "STAR",
   "SLASH", "ASSIGN", "EQ", "NE", "LT", "LE", "GT", "GE", "AND", "OR",
-  "UMINUS", "NOT", "IDENTIFIER", "K_INT", "L_INT", "';'", "$accept",
-  "statement", "program", "int_expr", YY_NULLPTR
+  "UMINUS", "NOT", "IDENTIFIER", "K_INT", "K_FLOAT", "K_STRING", "LPAREN",
+  "RPAREN", "LBRACE", "RBRACE", "SEMICOLON", "COMMA", "DECORATOR",
+  "PREPROCESSOR", "L_INT", "$accept", "statement", "program", "int_expr", YY_NULLPTR
     };
     return yy_sname[yysymbol];
   }
@@ -919,15 +920,15 @@ namespace jaguar { namespace parser {
   }
 
 
-  const signed char parser::yypact_ninf_ = -18;
+  const signed char parser::yypact_ninf_ = -25;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const signed char
   parser::yypact_[] =
   {
-     -18,     0,   -18,   -17,   -18,   -18,     1,    -5,   -12,   -12,
-     -18,   -12,   -18,   -18,     3,   -18
+     -25,     0,   -25,   -15,   -25,   -25,    -2,     2,   -24,   -24,
+     -25,   -24,   -25,   -25,     1,   -25
   };
 
   const signed char
@@ -940,7 +941,7 @@ namespace jaguar { namespace parser {
   const signed char
   parser::yypgoto_[] =
   {
-     -18,   -18,   -18,     2
+     -25,   -25,   -25,    -1
   };
 
   const signed char
@@ -952,30 +953,32 @@ namespace jaguar { namespace parser {
   const signed char
   parser::yytable_[] =
   {
-       2,     7,    11,     0,     8,     9,     8,     9,     4,     0,
-      12,    13,     0,    14,     0,     0,     0,     0,     0,     3,
-       4,     0,    10,     0,    15
+       2,     8,     9,     7,     8,     9,     4,    12,    13,    11,
+      14,     0,     0,     0,     0,     0,     0,     0,     0,     3,
+       0,     0,     0,     0,    10,     0,     0,    15,     0,     0,
+       4
   };
 
   const signed char
   parser::yycheck_[] =
   {
-       0,    18,     7,    -1,     3,     4,     3,     4,    20,    -1,
-       8,     9,    -1,    11,    -1,    -1,    -1,    -1,    -1,    19,
-      20,    -1,    21,    -1,    21
+       0,     3,     4,    18,     3,     4,    30,     8,     9,     7,
+      11,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    19,
+      -1,    -1,    -1,    -1,    26,    -1,    -1,    26,    -1,    -1,
+      30
   };
 
   const signed char
   parser::yystos_[] =
   {
-       0,    24,     0,    19,    20,    23,    25,    18,     3,     4,
-      21,     7,    25,    25,    25,    21
+       0,    33,     0,    19,    30,    32,    34,    18,     3,     4,
+      26,     7,    34,    34,    34,    26
   };
 
   const signed char
   parser::yyr1_[] =
   {
-       0,    22,    23,    23,    24,    24,    25,    25,    25
+       0,    31,    32,    32,    33,    33,    34,    34,    34
   };
 
   const signed char
@@ -991,7 +994,7 @@ namespace jaguar { namespace parser {
   const signed char
   parser::yyrline_[] =
   {
-       0,    74,    74,    78,    82,    83,    87,    88,    89
+       0,    90,    90,    94,    98,    99,   103,   104,   105
   };
 
   void
@@ -1035,7 +1038,7 @@ namespace jaguar { namespace parser {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    21,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1057,10 +1060,11 @@ namespace jaguar { namespace parser {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    28,    29,    30
     };
     // Last valid token kind.
-    const int code_max = 275;
+    const int code_max = 285;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -1072,9 +1076,9 @@ namespace jaguar { namespace parser {
 
 #line 3 "src/parser/jaguar.y"
 } } // jaguar::parser
-#line 1076 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 1080 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
 
-#line 92 "src/parser/jaguar.y"
+#line 108 "src/parser/jaguar.y"
 
 
 /* C++ code */

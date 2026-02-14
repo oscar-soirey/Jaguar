@@ -22,7 +22,7 @@
 
 %start program
 
-//ajouter += -= ++ -- ? ^
+//add += -= ++ -- ? ^
 
 //operator tokens
 %token PLUS MINUS STAR SLASH ASSIGN
@@ -32,7 +32,7 @@
 %token NOT //!
 
 //operator priority rules
-%right ASSIGN
+%right ASSIGN     //=
 
 %left OR
 %left AND
@@ -50,16 +50,32 @@
 /* Types */
 %union {
   int ival;
+  float fval;
   std::string* strval;
 }
 
 /* Tokens */
 //simple tokens
 %token <strval> IDENTIFIER
-%token K_INT
+
+//keyword tokens
+%token K_INT        //int
+%token K_FLOAT      //float
+%token K_STRING     //string
+
+//separator tokens
+%token LPAREN     //(
+%token RPAREN     //)
+%token LBRACE     //{
+%token RBRACE     //}
+%token SEMICOLON  //;
+%token COMMA      //,
+
+%token <strval> DECORATOR      //@
+%token <strval> PREPROCESSOR   //#
 
 //val tokens
-%token <ival> L_INT
+%token <ival> L_INT   //literal int, eg. 10, 57, ...
 
 
 /* Expressions */
@@ -71,11 +87,11 @@
 
 /* rules */
 statement
-  : int_expr ';'
+  : int_expr SEMICOLON
     {
       driver.result = $1;
     }
-  | K_INT IDENTIFIER ASSIGN int_expr ';'
+  | K_INT IDENTIFIER ASSIGN int_expr SEMICOLON
   ;
 
 program

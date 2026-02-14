@@ -9,37 +9,30 @@
 
 #include "../logger/compile_time_logger.h"
 
+//"void", "new", "for_loop", "for_each", "for_map", "break", "while", "if", "else", "register", "struct", "class"
+//"&&", "||", "+=", "-=", "*=", "/=", "++", "--", ":", "::", "."
+
 namespace jaguar::lexer
 {
-	const char* tokenNames[] = {
-		"KEYWORD",
-		"IDENTIFIER",
-		"OPERATOR",
-		"LPAREN",
-		"RPAREN",
-		"LBRACE",
-		"RBRACE",
-		"SEMICOLON",
-		"COMMA",
-		"DECORATOR",
-		"DOLLAR",
-		"PREPROCESSOR",
-		"LITERAL_INT",
-		"LITERAL_FLOAT",
-		"LITERAL_STRING"
-	};
-
-	const char* TokenToString(token_e t)
-	{
-		return tokenNames[t];
-	}
+	using enum jaguar::parser::parser::token::token_kind_type;
 
 	namespace data
 	{
-		const std::unordered_set<std::string> keywords = { "auto", "int", "float", "double", "string", "void", "new", "for_loop", "for_each", "for_map", "break", "while", "if", "else", "register", "struct", "class" };
+		const std::unordered_map<std::string, jaguar::parser::parser::token::token_kind_type> keywords = {
+			{"int", K_INT},
+			{"float", K_FLOAT},
+			{"string", K_STRING}
+		};
 		const std::unordered_set<char> operatorChars = { '+', '-', '*', '/', '=', '&', '|', ':', '.'};
-		const std::unordered_set<std::string> operators = { "=", "+", "-", "*", "/", "==", "&&", "||", "+=", "-=", "*=", "/=", "++", "--", ":", "::", "." };
-		const std::unordered_map<char, token_e> separators = {
+		const std::unordered_map<std::string, jaguar::parser::parser::token::token_kind_type> operators = { 
+			{"=", ASSIGN},
+			{"+", PLUS},
+			{"-", MINUS},
+			{"*", STAR},
+			{"/", SLASH},
+			{"==", EQ},
+		};
+		const std::unordered_map<char, jaguar::parser::parser::token::token_kind_type> separators = {
 			{';', SEMICOLON},
 			{'(', LPAREN},
 			{')', RPAREN},
@@ -112,15 +105,16 @@ namespace jaguar::lexer
 
 				std::string word = data.substr(start, i - start);
 
-				if (data::keywords.contains(word))
+				auto it = data::keywords.find(word);
+				//the word is a knowed keyword
+				if (it != data::keywords.end())
 				{
-					token.type = KEYWORD;
-					token.value = word;
+					token.type = it->second;
 				}
 				else
 				{
 					token.type = IDENTIFIER;
-					token.value = word;
+					token.str_val = word;
 				}
 				tokens.emplace_back(token);
 			}
@@ -129,7 +123,7 @@ namespace jaguar::lexer
 			{
 				int start = i;
 				token_t token;
-				token.type = LITERAL_INT;
+				token.type = L_INT;
 				token.line = line;
 				token.column = column;
 
@@ -137,14 +131,15 @@ namespace jaguar::lexer
 				{
 					if (data[i] == '.')
 					{
-						if (token.type == LITERAL_FLOAT)
+						//if yes, there is multiple dots in the literal, error
+						if (token.type == K_FLOAT)
 						{
 							//if type is already a float, there is mutliple dots in the number, error
 							logger::LogError(logger::LITERAL_FLOAT_ERROR, "Multiple dots in a literal float declaration");
 							return{};
 						}
 						//if dot in the literal, set type to decimal number
-						token.type = LITERAL_FLOAT;
+						token.type = K_FLOAT;
 					}
 					i++;
 					column++;
@@ -152,7 +147,16 @@ namespace jaguar::lexer
 
 				std::string num = data.substr(start, i - start);
 
-				token.value = num;
+				//try convert the value from string to int or float
+				try {
+						if (token.type == K_FLOAT)
+								token.f_val = std::stof(num);
+						else
+								token.i_val = std::stoi(num);
+				} catch (std::exception& e) {
+						std::cerr << "String to float or int convertion error: " << e.what() << "\n";
+				}
+
 				tokens.emplace_back(token);
 			}
 			//is string literal
@@ -163,7 +167,7 @@ namespace jaguar::lexer
 				int start = i;
 
 				token_t token;
-				token.type = LITERAL_STRING;
+				token.type = K_STRING;
 				token.line = line;
 				token.column = column;
 
@@ -179,7 +183,7 @@ namespace jaguar::lexer
 				}
 				std::string str = data.substr(start, i - start);
 
-				token.value = str;
+				token.str_val = str;
 				tokens.emplace_back(token);
 
 				i++;
@@ -190,7 +194,6 @@ namespace jaguar::lexer
 			{
 				token_t token;
 				token.type = data::separators.at(data[i]);
-				token.value = data[i];
 				token.line = line;
 				token.column = column;
 				tokens.emplace_back(token);
@@ -202,7 +205,6 @@ namespace jaguar::lexer
 			{
 				int start = i;
 				token_t token;
-				token.type = OPERATOR;
 				token.line = line;
 				token.column = column;
 
@@ -214,38 +216,15 @@ namespace jaguar::lexer
 				}
 
 				std::string opeStr = data.substr(start, i - start);
-				if (!data::operators.contains(opeStr))
+				auto it = data::operators.find(opeStr);
+				if (it == data::operators.end())
 				{
-					logger::LogError(logger::OPERATOR_ERROR, "");
+					logger::LogError(logger::OPERATOR_ERROR, "operator is not knowed");
 					return {};
 				}
 
-				token.value = opeStr;
+				token.type = it->second;
 				tokens.emplace_back(token);
-			}
-			//is decorator
-			else if(data[i] == '@')
-			{
-				token_t token;
-				token.type = DECORATOR;
-				token.value = "@";
-				token.line = line;
-				token.column = column;
-				tokens.emplace_back(token);
-				i++;
-				column++;
-			}
-			//is dollar identifier
-			else if (data[i] == '$')
-			{
-				token_t token;
-				token.type = DOLLAR;
-				token.value = "$";
-				token.line = line;
-				token.column = column;
-				tokens.emplace_back(token);
-				i++;
-				column++;
 			}
 			//is line jump
 			else if (data[i] == '\n')

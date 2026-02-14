@@ -3,39 +3,20 @@
 
 #include <string>
 #include <vector>
+#include "../generated/parser.tab.hpp"
 
 namespace jaguar::lexer
 {
-	typedef enum {
-		KEYWORD,
-		IDENTIFIER,
-
-		OPERATOR,
-
-		LPAREN,
-		RPAREN,
-		LBRACE,
-		RBRACE,
-		SEMICOLON,
-		COMMA,
-
-		DECORATOR,
-		DOLLAR,
-		PREPROCESSOR,
-
-		LITERAL_INT,
-		LITERAL_FLOAT,
-		LITERAL_STRING
-	}token_e;
-
 	typedef struct {
-		token_e type;
-		std::string value;
+		jaguar::parser::parser::token::token_kind_type type;
+		std::string str_val;
+		int i_val;
+		float f_val;
 		int line;
 		int column;
 	}token_t;
 
-	const char* TokenToString(token_e t);
+	//const char* TokenToString(parser::parser::token t);
 
 	std::vector<token_t> Tokenize(const std::string& _data, size_t _size);
 }

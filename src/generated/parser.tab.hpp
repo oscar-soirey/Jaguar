@@ -206,9 +206,10 @@ namespace jaguar { namespace parser {
 #line 51 "src/parser/jaguar.y"
 
   int ival;
+  float fval;
   std::string* strval;
 
-#line 212 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+#line 213 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
 
     };
 #endif
@@ -256,7 +257,17 @@ namespace jaguar { namespace parser {
     NOT = 272,                     // NOT
     IDENTIFIER = 273,              // IDENTIFIER
     K_INT = 274,                   // K_INT
-    L_INT = 275                    // L_INT
+    K_FLOAT = 275,                 // K_FLOAT
+    K_STRING = 276,                // K_STRING
+    LPAREN = 277,                  // LPAREN
+    RPAREN = 278,                  // RPAREN
+    LBRACE = 279,                  // LBRACE
+    RBRACE = 280,                  // RBRACE
+    SEMICOLON = 281,               // SEMICOLON
+    COMMA = 282,                   // COMMA
+    DECORATOR = 283,               // DECORATOR
+    PREPROCESSOR = 284,            // PREPROCESSOR
+    L_INT = 285                    // L_INT
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -273,7 +284,7 @@ namespace jaguar { namespace parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 22, ///< Number of tokens.
+        YYNTOKENS = 31, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -295,12 +306,21 @@ namespace jaguar { namespace parser {
         S_NOT = 17,                              // NOT
         S_IDENTIFIER = 18,                       // IDENTIFIER
         S_K_INT = 19,                            // K_INT
-        S_L_INT = 20,                            // L_INT
-        S_21_ = 21,                              // ';'
-        S_YYACCEPT = 22,                         // $accept
-        S_statement = 23,                        // statement
-        S_program = 24,                          // program
-        S_int_expr = 25                          // int_expr
+        S_K_FLOAT = 20,                          // K_FLOAT
+        S_K_STRING = 21,                         // K_STRING
+        S_LPAREN = 22,                           // LPAREN
+        S_RPAREN = 23,                           // RPAREN
+        S_LBRACE = 24,                           // LBRACE
+        S_RBRACE = 25,                           // RBRACE
+        S_SEMICOLON = 26,                        // SEMICOLON
+        S_COMMA = 27,                            // COMMA
+        S_DECORATOR = 28,                        // DECORATOR
+        S_PREPROCESSOR = 29,                     // PREPROCESSOR
+        S_L_INT = 30,                            // L_INT
+        S_YYACCEPT = 31,                         // $accept
+        S_statement = 32,                        // statement
+        S_program = 33,                          // program
+        S_int_expr = 34                          // int_expr
       };
     };
 
@@ -797,7 +817,7 @@ namespace jaguar { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 24,     ///< Last index in yytable_.
+      yylast_ = 30,     ///< Last index in yytable_.
       yynnts_ = 4,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
@@ -811,7 +831,7 @@ namespace jaguar { namespace parser {
 
 #line 3 "src/parser/jaguar.y"
 } } // jaguar::parser
-#line 815 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+#line 835 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
 
 
 
