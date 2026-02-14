@@ -2,6 +2,7 @@
 # Visual Studio / C++ IDE
 # =========================
 .vs/
+.vscode/
 *.VC.db
 *.VC.VC.opendb
 *.suo
