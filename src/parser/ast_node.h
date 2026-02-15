@@ -6,11 +6,14 @@ struct LLVMValue;
 namespace jaguar::parser
 {
 	typedef enum {
-		VarDecl,
-		FuncDecl,
-		ClassDecl,
+		VariableDeclation,
+		FunctionDeclation,
+		ClassDeclaration,
 		Expr,
-		Literal
+		Literal,
+		RootStatement,
+		IfStatement,
+		WhileStatement
 	}node_type_e;
 
 	class ASTNode {
@@ -22,8 +25,13 @@ namespace jaguar::parser
 		ASTNode(node_type_e t, int l, int c) : type(t), line(l), column(c) {}
 		virtual ~ASTNode()=default;
 
+		//Debugging
 		virtual void Print(int indent=0)=0;
+
+		//Semantics verifications
 		virtual void CheckSemantics()=0;
+
+		//IR Generation
 		virtual LLVMValue* Codegen() { return nullptr; }
 	};
 }

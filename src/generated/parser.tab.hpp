@@ -32,7 +32,7 @@
 
 
 /**
- ** \file S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp
+ ** \file E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp
  ** Define the jaguar::parser::parser class.
  */
 
@@ -42,14 +42,33 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_S_HORIZON_JAGUAR_JAGUAR_COMPILER_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED
-# define YY_YY_S_HORIZON_JAGUAR_JAGUAR_COMPILER_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED
+#ifndef YY_YY_E_CODE_HORIZON_JAGUAR_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED
+# define YY_YY_E_CODE_HORIZON_JAGUAR_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED
 // "%code requires" blocks.
-#line 9 "src/parser/jaguar.y"
+#line 9 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
 #include "../parser/driver.h"
+#include "../parser/ast_node.h"
+#include "../parser/nodes/statement.h"
+#include "../parser/nodes/statement_list.h"
+#include "../parser/nodes/var_decl.h"
+#include "../parser/nodes/expression.h"
+#include "../parser/nodes/int_literal.h"
 
-#line 53 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+//location structure for debugging
+struct location_t {
+  struct point {
+    int line;
+    int column;
+  };
+
+  point begin;
+  point end;
+
+  location_t() : begin{0,0}, end{0,0} {}
+};
+
+#line 72 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -183,9 +202,9 @@
 # define YYDEBUG 0
 #endif
 
-#line 3 "src/parser/jaguar.y"
+#line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 namespace jaguar { namespace parser {
-#line 189 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+#line 208 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 
@@ -203,32 +222,43 @@ namespace jaguar { namespace parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 51 "src/parser/jaguar.y"
+#line 42 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
   int ival;
   float fval;
   std::string* strval;
 
-#line 213 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+  std::unique_ptr<ASTNode> node;
+  std::unique_ptr<Statement> stmt;
+  std::unique_ptr<StatementList> stmtList;
+  std::unique_ptr<Expression> expr;
+
+#line 237 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
     };
 #endif
     /// Backward compatibility (Bison 3.8).
     typedef value_type semantic_type;
 
+    /// Symbol locations.
+    typedef location_t location_type;
 
     /// Syntax errors thrown from user actions.
     struct syntax_error : std::runtime_error
     {
-      syntax_error (const std::string& m)
+      syntax_error (const location_type& l, const std::string& m)
         : std::runtime_error (m)
+        , location (l)
       {}
 
       syntax_error (const syntax_error& s)
         : std::runtime_error (s.what ())
+        , location (s.location)
       {}
 
       ~syntax_error () YY_NOEXCEPT YY_NOTHROW;
+
+      location_type location;
     };
 
     /// Token kinds.
@@ -335,7 +365,7 @@ namespace jaguar { namespace parser {
     /// Expects its Base type to provide access to the symbol kind
     /// via kind ().
     ///
-    /// Provide access to semantic value.
+    /// Provide access to semantic value and location.
     template <typename Base>
     struct basic_symbol : Base
     {
@@ -345,6 +375,7 @@ namespace jaguar { namespace parser {
       /// Default constructor.
       basic_symbol () YY_NOEXCEPT
         : value ()
+        , location ()
       {}
 
 #if 201103L <= YY_CPLUSPLUS
@@ -352,17 +383,20 @@ namespace jaguar { namespace parser {
       basic_symbol (basic_symbol&& that)
         : Base (std::move (that))
         , value (std::move (that.value))
+        , location (std::move (that.location))
       {}
 #endif
 
       /// Copy constructor.
       basic_symbol (const basic_symbol& that);
       /// Constructor for valueless symbols.
-      basic_symbol (typename Base::kind_type t);
+      basic_symbol (typename Base::kind_type t,
+                    YY_MOVE_REF (location_type) l);
 
       /// Constructor for symbols with semantic value.
       basic_symbol (typename Base::kind_type t,
-                    YY_RVREF (value_type) v);
+                    YY_RVREF (value_type) v,
+                    YY_RVREF (location_type) l);
 
       /// Destroy the symbol.
       ~basic_symbol ()
@@ -395,6 +429,9 @@ namespace jaguar { namespace parser {
 
       /// The semantic value.
       value_type value;
+
+      /// The location.
+      location_type location;
 
     private:
 #if YY_CPLUSPLUS < 201103L
@@ -484,8 +521,9 @@ namespace jaguar { namespace parser {
 #endif
 
     /// Report a syntax error.
+    /// \param loc    where the syntax error is found.
     /// \param msg    a description of the syntax error.
-    virtual void error (const std::string& msg);
+    virtual void error (const location_type& loc, const std::string& msg);
 
     /// Report a syntax error.
     void error (const syntax_error& err);
@@ -502,6 +540,8 @@ namespace jaguar { namespace parser {
       context (const parser& yyparser, const symbol_type& yyla);
       const symbol_type& lookahead () const YY_NOEXCEPT { return yyla_; }
       symbol_kind_type token () const YY_NOEXCEPT { return yyla_.kind (); }
+      const location_type& location () const YY_NOEXCEPT { return yyla_.location; }
+
       /// Put in YYARG at most YYARGN of the expected tokens, and return the
       /// number of tokens stored in YYARG.  If YYARG is null, return the
       /// number of expected tokens (guaranteed to be less than YYNTOKENS).
@@ -590,7 +630,7 @@ namespace jaguar { namespace parser {
 
 #if YYDEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-    static const signed char yyrline_[];
+    static const unsigned char yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r) const;
     /// Print the state stack on the debug stream.
@@ -829,11 +869,11 @@ namespace jaguar { namespace parser {
   };
 
 
-#line 3 "src/parser/jaguar.y"
+#line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 } } // jaguar::parser
-#line 835 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.hpp"
+#line 875 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 
 
-#endif // !YY_YY_S_HORIZON_JAGUAR_JAGUAR_COMPILER_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED
+#endif // !YY_YY_E_CODE_HORIZON_JAGUAR_SRC_GENERATED_PARSER_TAB_HPP_INCLUDED

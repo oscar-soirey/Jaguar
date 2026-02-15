@@ -1,10 +1,27 @@
 #ifndef JAGUAR_DRIVER_H
 #define JAGUAR_DRIVER_H
 
+#include "nodes/statement_list.h"
+#include <vector>
+#include <memory>
+
+//AST example : 
+/**
+ * Driver
+ └─ root (StatementList of the program)
+      ├─ VarDecl(int x = 5)
+      ├─ ExpressionStatement(x + 1)
+      └─ IfStatement
+           └─ StatementList of the IfStatement
+                ├─ VarDecl(int y = x)
+                └─ ExpressionStatement(sys::print(y))
+ */
+
 namespace jaguar::parser
 {
   struct Driver {
-    int result = 0;
+    //root statement list of the program
+    std::unique_ptr<StatementList> root;
   };
 }
 

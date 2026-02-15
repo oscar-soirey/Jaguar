@@ -37,14 +37,15 @@
 
 
 // First part of user prologue.
-#line 16 "src/parser/jaguar.y"
+#line 33 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <memory>
 #include "../parser/parser.h"
 
-#line 48 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 49 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
 
 #include "parser.tab.hpp"
@@ -74,6 +75,25 @@
 # endif
 #endif
 
+#define YYRHSLOC(Rhs, K) ((Rhs)[K].location)
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+# ifndef YYLLOC_DEFAULT
+#  define YYLLOC_DEFAULT(Current, Rhs, N)                               \
+    do                                                                  \
+      if (N)                                                            \
+        {                                                               \
+          (Current).begin  = YYRHSLOC (Rhs, 1).begin;                   \
+          (Current).end    = YYRHSLOC (Rhs, N).end;                     \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          (Current).begin = (Current).end = YYRHSLOC (Rhs, 0).end;      \
+        }                                                               \
+    while (false)
+# endif
 
 
 // Enable debugging if requested.
@@ -121,9 +141,9 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 3 "src/parser/jaguar.y"
+#line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 namespace jaguar { namespace parser {
-#line 127 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 147 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
   /// Build a parser object.
   parser::parser (Driver& driver_yyarg)
@@ -151,20 +171,23 @@ namespace jaguar { namespace parser {
   parser::basic_symbol<Base>::basic_symbol (const basic_symbol& that)
     : Base (that)
     , value (that.value)
+    , location (that.location)
   {}
 
 
   /// Constructor for valueless symbols.
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t)
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_MOVE_REF (location_type) l)
     : Base (t)
     , value ()
+    , location (l)
   {}
 
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_RVREF (value_type) v)
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_RVREF (value_type) v, YY_RVREF (location_type) l)
     : Base (t)
     , value (YY_MOVE (v))
+    , location (YY_MOVE (l))
   {}
 
 
@@ -189,6 +212,7 @@ namespace jaguar { namespace parser {
   {
     super_type::move (s);
     value = YY_MOVE (s.value);
+    location = YY_MOVE (s.location);
   }
 
   // by_kind.
@@ -281,7 +305,7 @@ namespace jaguar { namespace parser {
   {}
 
   parser::stack_symbol_type::stack_symbol_type (YY_RVREF (stack_symbol_type) that)
-    : super_type (YY_MOVE (that.state), YY_MOVE (that.value))
+    : super_type (YY_MOVE (that.state), YY_MOVE (that.value), YY_MOVE (that.location))
   {
 #if 201103L <= YY_CPLUSPLUS
     // that is emptied.
@@ -290,7 +314,7 @@ namespace jaguar { namespace parser {
   }
 
   parser::stack_symbol_type::stack_symbol_type (state_type s, YY_MOVE_REF (symbol_type) that)
-    : super_type (s, YY_MOVE (that.value))
+    : super_type (s, YY_MOVE (that.value), YY_MOVE (that.location))
   {
     // that is emptied.
     that.kind_ = symbol_kind::S_YYEMPTY;
@@ -302,6 +326,7 @@ namespace jaguar { namespace parser {
   {
     state = that.state;
     value = that.value;
+    location = that.location;
     return *this;
   }
 
@@ -310,6 +335,7 @@ namespace jaguar { namespace parser {
   {
     state = that.state;
     value = that.value;
+    location = that.location;
     // that is emptied.
     that.state = empty_state;
     return *this;
@@ -340,7 +366,8 @@ namespace jaguar { namespace parser {
       {
         symbol_kind_type yykind = yysym.kind ();
         yyo << (yykind < YYNTOKENS ? "token" : "nterm")
-            << ' ' << yysym.name () << " (";
+            << ' ' << yysym.name () << " ("
+            << yysym.location << ": ";
         YY_USE (yykind);
         yyo << ')';
       }
@@ -441,6 +468,9 @@ namespace jaguar { namespace parser {
     /// The lookahead symbol.
     symbol_type yyla;
 
+    /// The locations where the error started and ended.
+    stack_symbol_type yyerror_range[3];
+
     /// The return value of parse ().
     int yyresult;
 
@@ -489,7 +519,7 @@ namespace jaguar { namespace parser {
         try
 #endif // YY_EXCEPTIONS
           {
-            yyla.kind_ = yytranslate_ (yylex (&yyla.value));
+            yyla.kind_ = yytranslate_ (yylex (&yyla.value, &yyla.location));
           }
 #if YY_EXCEPTIONS
         catch (const syntax_error& yyexc)
@@ -568,6 +598,12 @@ namespace jaguar { namespace parser {
       else
         yylhs.value = yystack_[0].value;
 
+      // Default location.
+      {
+        stack_type::slice range (yystack_, yylen);
+        YYLLOC_DEFAULT (yylhs.location, range, yylen);
+        yyerror_range[1].location = yylhs.location;
+      }
 
       // Perform the reduction.
       YY_REDUCE_PRINT (yyn);
@@ -578,33 +614,72 @@ namespace jaguar { namespace parser {
           switch (yyn)
             {
   case 2: // statement: int_expr SEMICOLON
-#line 91 "src/parser/jaguar.y"
+#line 125 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
     {
-      driver.result = (yystack_[1].value.ival);
+      //driver.result = $1;
     }
-#line 586 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 622 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 3: // statement: K_INT IDENTIFIER ASSIGN int_expr SEMICOLON
+#line 129 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+    {
+      //$2 is the identifier and $4 is the expression
+      (yylhs.value.stmt) = std::make_unique<VarDecl>(
+        *(yystack_[3].value.strval), //name
+        "int", //type
+        std::unique_ptr<Expression>((yystack_[1].value.expr)), //expression init
+        yystack_[4].location.begin.line,
+        yystack_[4].location.begin.column);
+      //free the var name (string)
+      delete (yystack_[3].value.strval);
+    }
+#line 638 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 4: // program: %empty
+#line 143 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                               {
+      (yylhs.value.stmtList) = std::make_unique<StatementList>(RootStatement, 0,0); //location 0, 0
+    }
+#line 646 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 5: // program: program statement
+#line 146 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                      {
+      (yystack_[1].value.stmtList)->Add(std::move((yystack_[0].value.stmt)));
+      (yylhs.value.stmtList) = std::move((yystack_[1].value.stmtList));
+    }
+#line 655 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
   case 6: // int_expr: L_INT
-#line 103 "src/parser/jaguar.y"
-          { (yylhs.value.ival) = (yystack_[0].value.ival); }
-#line 592 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 153 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+          { //literal int, eg. 10, 46
+      (yylhs.value.expr) = std::make_unique<IntLiteral>((yystack_[0].value.ival), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+    }
+#line 663 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
   case 7: // int_expr: int_expr PLUS int_expr
-#line 104 "src/parser/jaguar.y"
-                           { (yylhs.value.ival) = (yystack_[2].value.ival) + (yystack_[0].value.ival); }
-#line 598 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 156 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                           { //int plus operation, eg. 40 + 57
+      //$$ = new BinaryOperation();
+    }
+#line 671 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
   case 8: // int_expr: int_expr MINUS int_expr
-#line 105 "src/parser/jaguar.y"
-                            { (yylhs.value.ival) = (yystack_[2].value.ival) - (yystack_[0].value.ival); }
-#line 604 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 159 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                            { 
+      //$$ = 
+    }
+#line 679 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
 
-#line 608 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 683 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
             default:
               break;
@@ -638,10 +713,11 @@ namespace jaguar { namespace parser {
         ++yynerrs_;
         context yyctx (*this, yyla);
         std::string msg = yysyntax_error_ (yyctx);
-        error (YY_MOVE (msg));
+        error (yyla.location, YY_MOVE (msg));
       }
 
 
+    yyerror_range[1].location = yyla.location;
     if (yyerrstatus_ == 3)
       {
         /* If just tried and failed to reuse lookahead token after an
@@ -703,6 +779,7 @@ namespace jaguar { namespace parser {
         if (yystack_.size () == 1)
           YYABORT;
 
+        yyerror_range[1].location = yystack_[0].location;
         yy_destroy_ ("Error: popping", yystack_[0]);
         yypop_ ();
         YY_STACK_PRINT ();
@@ -710,6 +787,8 @@ namespace jaguar { namespace parser {
     {
       stack_symbol_type error_token;
 
+      yyerror_range[2].location = yyla.location;
+      YYLLOC_DEFAULT (error_token.location, yyerror_range, 2);
 
       // Shift the error token.
       error_token.state = state_type (yyn);
@@ -775,7 +854,7 @@ namespace jaguar { namespace parser {
   void
   parser::error (const syntax_error& yyexc)
   {
-    error (yyexc.what ());
+    error (yyexc.location, yyexc.what ());
   }
 
   const char *
@@ -991,10 +1070,10 @@ namespace jaguar { namespace parser {
 
 
 #if YYDEBUG
-  const signed char
+  const unsigned char
   parser::yyrline_[] =
   {
-       0,    90,    90,    94,    98,    99,   103,   104,   105
+       0,   124,   124,   128,   143,   146,   153,   156,   159
   };
 
   void
@@ -1074,11 +1153,8 @@ namespace jaguar { namespace parser {
       return symbol_kind::S_YYUNDEF;
   }
 
-#line 3 "src/parser/jaguar.y"
+#line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 } } // jaguar::parser
-#line 1080 "S:/Horizon/Jaguar/Jaguar-Compiler/src/generated/parser.tab.cpp"
+#line 1159 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
-#line 108 "src/parser/jaguar.y"
-
-
-/* C++ code */
+#line 164 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"

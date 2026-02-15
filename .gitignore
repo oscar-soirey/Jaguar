@@ -17,7 +17,6 @@ out/
 # Build / Binaries
 # =========================
 [Bb]uild/
-[Bb]in/
 [Dd]ebug*/
 [Rr]elease*/
 cmake-build-debug/

@@ -8,18 +8,54 @@
 %code requires 
 {
 #include "../parser/driver.h"
+#include "../parser/ast_node.h"
+#include "../parser/nodes/statement.h"
+#include "../parser/nodes/statement_list.h"
+#include "../parser/nodes/var_decl.h"
+#include "../parser/nodes/expression.h"
+#include "../parser/nodes/int_literal.h"
+
+//location structure for debugging
+struct location_t {
+  struct point {
+    int line;
+    int column;
+  };
+
+  point begin;
+  point end;
+
+  location_t() : begin{0,0}, end{0,0} {}
+};
 }
-//pass the driver
-%parse-param { Driver& driver }
 
 /* Only in the cpp file */
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <memory>
 #include "../parser/parser.h"
 %}
 
+/* Types */
+%union {
+  int ival;
+  float fval;
+  std::string* strval;
+
+  std::unique_ptr<ASTNode> node;
+  std::unique_ptr<Statement> stmt;
+  std::unique_ptr<StatementList> stmtList;
+  std::unique_ptr<Expression> expr;
+}
+
+//pass the driver and activate locations for debugging
+%parse-param { Driver& driver }
+%define api.location.type {location_t}
+%locations
+
+//set the rule entry point
 %start program
 
 //add += -= ++ -- ? ^
@@ -47,13 +83,6 @@
 
 
 
-/* Types */
-%union {
-  int ival;
-  float fval;
-  std::string* strval;
-}
-
 /* Tokens */
 //simple tokens
 %token <strval> IDENTIFIER
@@ -80,7 +109,12 @@
 
 /* Expressions */
 //operations that produce an int
-%type <ival> int_expr
+%type <expr> int_expr
+
+
+//a statement (instruction) produces a Statement object
+%type <stmt> statement
+%type <stmtList> program
 
 
 %%
@@ -89,22 +123,42 @@
 statement
   : int_expr SEMICOLON
     {
-      driver.result = $1;
+      //driver.result = $1;
     }
   | K_INT IDENTIFIER ASSIGN int_expr SEMICOLON
+    {
+      //$2 is the identifier and $4 is the expression
+      $$ = std::make_unique<VarDecl>(
+        *$2, //name
+        "int", //type
+        std::unique_ptr<Expression>($4), //expression init
+        @1.begin.line,
+        @1.begin.column);
+      //free the var name (string)
+      delete $2;
+    }
   ;
 
 program
-  : /* empty */
-  | program statement
+  : /* start of the program */ {
+      $$ = std::make_unique<StatementList>(RootStatement, 0,0); //location 0, 0
+    }
+  | program statement {
+      $1->Add(std::move($2));
+      $$ = std::move($1);
+    }
   ;
 
 int_expr
-  : L_INT { $$ = $1; }
-  | int_expr PLUS int_expr { $$ = $1 + $3; }
-  | int_expr MINUS int_expr { $$ = $1 - $3; }
+  : L_INT { //literal int, eg. 10, 46
+      $$ = std::make_unique<IntLiteral>($1, @1.begin.line, @1.begin.column);
+    }
+  | int_expr PLUS int_expr { //int plus operation, eg. 40 + 57
+      //$$ = new BinaryOperation();
+    }
+  | int_expr MINUS int_expr { 
+      //$$ = 
+    }
   ;
 
 %%
-
-/* C++ code */
