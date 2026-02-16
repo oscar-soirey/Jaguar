@@ -7,6 +7,7 @@ namespace jaguar::parser
 {
 	typedef enum {
 		VariableDeclation,
+		VariableAssignement,
 		FunctionDeclation,
 		ClassDeclaration,
 		Expr,

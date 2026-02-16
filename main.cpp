@@ -16,5 +16,12 @@ int main()
 	jaguar::parser::parser p(driver);
 	int result = p.parse();
 
+	printf("root statement size : %zu\n", driver.root->statements.size());
+
+	for (const auto& s : driver.root->statements)
+	{
+		s->Print();
+	}
+
 	return result;
 }

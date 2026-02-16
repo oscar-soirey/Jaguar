@@ -167,7 +167,7 @@ namespace jaguar::lexer
 				int start = i;
 
 				token_t token;
-				token.type = K_STRING;
+				token.type = L_STRING;
 				token.line = line;
 				token.column = column;
 

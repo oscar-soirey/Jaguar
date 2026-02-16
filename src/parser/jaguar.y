@@ -14,18 +14,22 @@
 #include "../parser/nodes/var_decl.h"
 #include "../parser/nodes/expression.h"
 #include "../parser/nodes/int_literal.h"
+#include "../parser/nodes/string_literal.h"
+#include "../parser/nodes/var_assign.h"
+#include "../parser/nodes/binary_op.h"
+#include "../parser/nodes/var_ref.h"
 
 //location structure for debugging
 struct location_t {
-  struct point {
-    int line;
-    int column;
-  };
+	struct point {
+		int line;
+		int column;
+	};
 
-  point begin;
-  point end;
+	point begin;
+	point end;
 
-  location_t() : begin{0,0}, end{0,0} {}
+	location_t() : begin{0,0}, end{0,0} {}
 };
 }
 
@@ -40,14 +44,14 @@ struct location_t {
 
 /* Types */
 %union {
-  int ival;
-  float fval;
-  std::string* strval;
+	int ival;
+	float fval;
+	std::string* strval;
 
-  std::unique_ptr<ASTNode> node;
-  std::unique_ptr<Statement> stmt;
-  std::unique_ptr<StatementList> stmtList;
-  std::unique_ptr<Expression> expr;
+	ASTNode* node;
+	Statement* stmt;
+	StatementList* stmtList;
+	Expression* expr;
 }
 
 //pass the driver and activate locations for debugging
@@ -105,11 +109,13 @@ struct location_t {
 
 //val tokens
 %token <ival> L_INT   //literal int, eg. 10, 57, ...
+%token <strval> L_STRING  //literal string, eg. "hello world!"
 
 
 /* Expressions */
 //operations that produce an int
 %type <expr> int_expr
+%type <expr> str_expr
 
 
 //a statement (instruction) produces a Statement object
@@ -121,44 +127,109 @@ struct location_t {
 
 /* rules */
 statement
-  : int_expr SEMICOLON
-    {
-      //driver.result = $1;
-    }
-  | K_INT IDENTIFIER ASSIGN int_expr SEMICOLON
-    {
-      //$2 is the identifier and $4 is the expression
-      $$ = std::make_unique<VarDecl>(
-        *$2, //name
-        "int", //type
-        std::unique_ptr<Expression>($4), //expression init
-        @1.begin.line,
-        @1.begin.column);
-      //free the var name (string)
-      delete $2;
-    }
-  ;
+	:
+		IDENTIFIER ASSIGN int_expr SEMICOLON {
+			std::string name = std::move(*$1);
+			//delete $1;
+
+			$$ = new VarAssign(
+				name, //var name
+				$3, //expr
+				@1.begin.line,
+				@1.begin.column
+			);
+		}
+
+		//int declaration without initialization
+	| K_INT IDENTIFIER SEMICOLON {
+			std::string name = std::move(*$2);
+			//delete $2;
+
+			$$ = new VarDecl(
+				name,
+				"int",
+				nullptr,
+				@1.begin.line,
+				@1.begin.column
+			);
+		}
+		//int declaration with initialization
+	| K_INT IDENTIFIER ASSIGN int_expr SEMICOLON {
+			std::string name = std::move(*$2);
+			//delete $2;
+			
+			$$ = new VarDecl(
+				name, //name
+				"int", //type
+				$4, //expression
+				@1.begin.line,
+				@1.begin.column
+			);
+		}
+
+
+	//string declation without init
+	| K_STRING IDENTIFIER SEMICOLON {
+			std::string name = std::move(*$2);
+			//delete $2;
+			
+			$$ = new VarDecl(
+				name,
+				"string",
+				nullptr,
+				@1.begin.line,
+				@1.begin.column
+			);
+		}
+
+	| K_STRING IDENTIFIER ASSIGN str_expr SEMICOLON {
+			std::string name = std::move(*$2);
+			//delete $2;
+			
+			$$ = new VarDecl(
+				name,
+				"string",
+				$4,
+				@1.begin.line,
+				@1.begin.column
+			);
+	}
+	;
 
 program
-  : /* start of the program */ {
-      $$ = std::make_unique<StatementList>(RootStatement, 0,0); //location 0, 0
-    }
-  | program statement {
-      $1->Add(std::move($2));
-      $$ = std::move($1);
-    }
-  ;
+	: /* start of the program */ {
+			$$ = new StatementList(RootStatement, 0, 0); //location 0, 0
+			driver.root = $$;
+		}
+	| program statement {
+			$1->Add($2);
+			$$ = $1;
+		}
+	;
+
 
 int_expr
-  : L_INT { //literal int, eg. 10, 46
-      $$ = std::make_unique<IntLiteral>($1, @1.begin.line, @1.begin.column);
-    }
-  | int_expr PLUS int_expr { //int plus operation, eg. 40 + 57
-      //$$ = new BinaryOperation();
-    }
-  | int_expr MINUS int_expr { 
-      //$$ = 
-    }
-  ;
+	: L_INT { //literal int, eg. 10, 46
+			$$ = new IntLiteral($1, @1.begin.line, @1.begin.column);
+		}
+	| IDENTIFIER {
+			std::string name = *$1;
+			//delete $1;
+			$$ = new VarRef(name, @1.begin.line, @1.begin.column);
+		}
+	| int_expr PLUS int_expr { //int plus operation, eg. 40 + 57
+			$$ = new BinaryOp($1, $3, '+', @1.begin.line, @1.begin.column);
+		}
+	| int_expr MINUS int_expr {
+			$$ = new BinaryOp($1, $3, '-', @1.begin.line, @1.begin.column);
+		}
+	;
+
+
+
+str_expr
+	: L_STRING {
+		$$ = new StringLiteral(*$1, @1.begin.line, @1.begin.column);
+	}
 
 %%

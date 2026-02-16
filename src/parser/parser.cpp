@@ -27,6 +27,10 @@ namespace jaguar::parser
 				yylval->ival = tok.i_val;
 				break;
 			}
+			case(L_STRING): {
+				yylval->strval = &tok.str_val;
+				break;
+			}
 		}
 		
 		printf("current token %d, type %d\n", currentToken, tok.type);

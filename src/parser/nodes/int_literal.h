@@ -8,10 +8,10 @@ namespace jaguar::parser
 	public:
 		int value;
 		IntLiteral(int v, int line, int col) : value(v), Expression(line, col) {}
-		
-		void Print(int indent = 0) override {}
-		void CheckSemantics() override {}
 
-		LLVMValue* Codegen() override { return nullptr; }
+		std::string GetExpressionString() override
+		{
+			return { "IntLiteral(" + std::to_string(value) + ")" };
+		}
 	};
 }

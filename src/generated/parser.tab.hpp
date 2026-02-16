@@ -54,21 +54,25 @@
 #include "../parser/nodes/var_decl.h"
 #include "../parser/nodes/expression.h"
 #include "../parser/nodes/int_literal.h"
+#include "../parser/nodes/string_literal.h"
+#include "../parser/nodes/var_assign.h"
+#include "../parser/nodes/binary_op.h"
+#include "../parser/nodes/var_ref.h"
 
 //location structure for debugging
 struct location_t {
-  struct point {
-    int line;
-    int column;
-  };
+	struct point {
+		int line;
+		int column;
+	};
 
-  point begin;
-  point end;
+	point begin;
+	point end;
 
-  location_t() : begin{0,0}, end{0,0} {}
+	location_t() : begin{0,0}, end{0,0} {}
 };
 
-#line 72 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 76 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -204,7 +208,7 @@ struct location_t {
 
 #line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 namespace jaguar { namespace parser {
-#line 208 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 212 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 
@@ -222,18 +226,18 @@ namespace jaguar { namespace parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 42 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+#line 46 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
-  int ival;
-  float fval;
-  std::string* strval;
+	int ival;
+	float fval;
+	std::string* strval;
 
-  std::unique_ptr<ASTNode> node;
-  std::unique_ptr<Statement> stmt;
-  std::unique_ptr<StatementList> stmtList;
-  std::unique_ptr<Expression> expr;
+	ASTNode* node;
+	Statement* stmt;
+	StatementList* stmtList;
+	Expression* expr;
 
-#line 237 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 241 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
     };
 #endif
@@ -297,7 +301,8 @@ namespace jaguar { namespace parser {
     COMMA = 282,                   // COMMA
     DECORATOR = 283,               // DECORATOR
     PREPROCESSOR = 284,            // PREPROCESSOR
-    L_INT = 285                    // L_INT
+    L_INT = 285,                   // L_INT
+    L_STRING = 286                 // L_STRING
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -314,7 +319,7 @@ namespace jaguar { namespace parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 31, ///< Number of tokens.
+        YYNTOKENS = 32, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -347,10 +352,12 @@ namespace jaguar { namespace parser {
         S_DECORATOR = 28,                        // DECORATOR
         S_PREPROCESSOR = 29,                     // PREPROCESSOR
         S_L_INT = 30,                            // L_INT
-        S_YYACCEPT = 31,                         // $accept
-        S_statement = 32,                        // statement
-        S_program = 33,                          // program
-        S_int_expr = 34                          // int_expr
+        S_L_STRING = 31,                         // L_STRING
+        S_YYACCEPT = 32,                         // $accept
+        S_statement = 33,                        // statement
+        S_program = 34,                          // program
+        S_int_expr = 35,                         // int_expr
+        S_str_expr = 36                          // str_expr
       };
     };
 
@@ -857,8 +864,8 @@ namespace jaguar { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 30,     ///< Last index in yytable_.
-      yynnts_ = 4,  ///< Number of nonterminal symbols.
+      yylast_ = 29,     ///< Last index in yytable_.
+      yynnts_ = 5,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
 
@@ -871,7 +878,7 @@ namespace jaguar { namespace parser {
 
 #line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 } } // jaguar::parser
-#line 875 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 882 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 

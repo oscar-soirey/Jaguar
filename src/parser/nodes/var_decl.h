@@ -13,9 +13,10 @@ namespace jaguar::parser
 		std::string var_name;
 		std::string var_type;
 
-		std::unique_ptr<Expression> init;
+		Expression* init;
 
-		VarDecl(const std::string& n, const std::string& t, std::unique_ptr<Expression> i, int l, int c);
+		//pass the strings by value to copy (so we can delete string* just after call to this function)
+		VarDecl(std::string n, std::string t, Expression* i, int l, int c);
 
 		void Print(int indent) override;
 		void CheckSemantics() override;

@@ -21,7 +21,7 @@ namespace jaguar::parser
 {
   struct Driver {
     //root statement list of the program
-    std::unique_ptr<StatementList> root;
+    StatementList* root;
   };
 }
 
