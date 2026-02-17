@@ -33,7 +33,6 @@ namespace jaguar::parser
 			}
 		}
 		
-		printf("current token %d, type %d\n", currentToken, tok.type);
 		yylloc->begin.line = tok.line;
 		yylloc->begin.column = tok.column;
 		currentToken++;
@@ -42,13 +41,9 @@ namespace jaguar::parser
 
 	using namespace jaguar::parser;
 
+	//syntax error handling
 	void parser::error(const location_type& loc, const std::string& msg)
 	{
-		printf("Parser error : line : %d, column : %d. Error detail : %s", loc.begin.line, loc.begin.column, msg.c_str());
+		printf("Parser error : line : %d, column : %d. Error detail : %s\n", loc.begin.line, loc.begin.column, msg.c_str());
 	}
-
-	/*void jaguar::parser::parser::error(const std::string &msg)
-	{
-		std::cerr << "Parse error: " << msg << std::endl;
-	}*/
 }

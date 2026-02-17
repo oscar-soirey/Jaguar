@@ -8,16 +8,21 @@
 %code requires 
 {
 #include "../parser/driver.h"
-#include "../parser/ast_node.h"
-#include "../parser/nodes/statement.h"
-#include "../parser/nodes/statement_list.h"
-#include "../parser/nodes/var_decl.h"
-#include "../parser/nodes/expression.h"
-#include "../parser/nodes/int_literal.h"
-#include "../parser/nodes/string_literal.h"
-#include "../parser/nodes/var_assign.h"
-#include "../parser/nodes/binary_op.h"
-#include "../parser/nodes/var_ref.h"
+#include "../parser/nodes/ast_node.h"
+
+#include "../parser/nodes/statements/statement.h"
+#include "../parser/nodes/statements/statement_list.h"
+#include "../parser/nodes/statements/var_decl.h"
+#include "../parser/nodes/statements/var_assign.h"
+
+#include "../parser/nodes/expressions/expression.h"
+#include "../parser/nodes/expressions/binary_op.h"
+#include "../parser/nodes/expressions/var_ref.h"
+#include "../parser/nodes/expressions/literal/int_literal.h"
+#include "../parser/nodes/expressions/literal/string_literal.h"
+
+#include "../parser/nodes/blocks/block_statement.h"
+#include "../parser/nodes/blocks/if_statement.h"
 
 //location structure for debugging
 struct location_t {
@@ -47,6 +52,7 @@ struct location_t {
 	int ival;
 	float fval;
 	std::string* strval;
+	bool bval;
 
 	ASTNode* node;
 	Statement* stmt;
@@ -92,9 +98,18 @@ struct location_t {
 %token <strval> IDENTIFIER
 
 //keyword tokens
+//types
 %token K_INT        //int
 %token K_FLOAT      //float
 %token K_STRING     //string
+
+//statements
+%token K_IF
+%token K_ELSE
+%token K_WHILE
+%token K_FOR_LOOP
+%token K_FOR_EACH
+%token K_FOR_MAP
 
 //separator tokens
 %token LPAREN     //(
@@ -118,14 +133,19 @@ struct location_t {
 %type <expr> str_expr
 
 
-//a statement (instruction) produces a Statement object
+//a statement (instruction) produces a Statement object pointer
 %type <stmt> statement
 %type <stmtList> program
+
+//blocks statement
+%type <stmt> block
+%type <stmtList> stmt_list
 
 
 %%
 
-/* rules */
+
+/* an instruction */
 statement
 	:
 		IDENTIFIER ASSIGN int_expr SEMICOLON {
@@ -193,8 +213,13 @@ statement
 				@1.begin.line,
 				@1.begin.column
 			);
-	}
+		}
 	;
+
+	//Bloc statement (whith braces {})
+	| block {
+			$$ = $1;
+		}
 
 program
 	: /* start of the program */ {
@@ -207,10 +232,35 @@ program
 		}
 	;
 
+	
+
+/* A block statement */
+stmt_list
+		: /* empty */ {
+				$$ = new StatementList(None, 0, 0);
+		}
+		| stmt_list statement {
+				$1->Add($2);
+				$$ = $1;
+		}
+	;
+
+block
+		: LBRACE stmt_list RBRACE {
+				$$ = new BlockStatement($2, @1.begin.line, @1.begin.column);
+			}
+		| K_IF LPAREN int_expr RPAREN LBRACE stmt_list RBRACE {
+				$$ = new IfStatement($6, $3, @1.begin.line, @1.begin.column);
+			}
+	;
+
 
 int_expr
 	: L_INT { //literal int, eg. 10, 46
 			$$ = new IntLiteral($1, @1.begin.line, @1.begin.column);
+		}
+	| LPAREN int_expr RPAREN {
+			$$ = $2;
 		}
 	| IDENTIFIER {
 			std::string name = *$1;
@@ -223,6 +273,12 @@ int_expr
 	| int_expr MINUS int_expr {
 			$$ = new BinaryOp($1, $3, '-', @1.begin.line, @1.begin.column);
 		}
+	| int_expr STAR int_expr {
+			$$ = new BinaryOp($1, $3, '*', @1.begin.line, @1.begin.column);
+		}
+	| int_expr SLASH int_expr {
+			$$ = new BinaryOp($1, $3, '/', @1.begin.line, @1.begin.column);
+		}
 	;
 
 
@@ -230,6 +286,11 @@ int_expr
 str_expr
 	: L_STRING {
 		$$ = new StringLiteral(*$1, @1.begin.line, @1.begin.column);
-	}
+		}
+	| IDENTIFIER {
+			std::string name = *$1;
+			//delete $1;
+			$$ = new VarRef(name, @1.begin.line, @1.begin.column);
+		}
 
 %%

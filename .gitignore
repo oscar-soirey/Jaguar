@@ -21,8 +21,10 @@ out/
 [Rr]elease*/
 cmake-build-debug/
 cmake-build-debug-mingw/
+cmake-build-debug-visual-studio/
 cmake-build-release/
 cmake-build-release-mingw/
+cmake-build-release-visual-studio/
 x64/
 *.exe
 *.dll
@@ -77,4 +79,3 @@ Makefile
 # Dev files
 # =========================
 dev/
-*.txt

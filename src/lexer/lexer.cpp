@@ -21,7 +21,10 @@ namespace jaguar::lexer
 		const std::unordered_map<std::string, jaguar::parser::parser::token::token_kind_type> keywords = {
 			{"int", K_INT},
 			{"float", K_FLOAT},
-			{"string", K_STRING}
+			{"string", K_STRING},
+			{"if", K_IF},
+			{"else", K_ELSE},
+			{"while", K_WHILE}
 		};
 		const std::unordered_set<char> operatorChars = { '+', '-', '*', '/', '=', '&', '|', ':', '.'};
 		const std::unordered_map<std::string, jaguar::parser::parser::token::token_kind_type> operators = { 

@@ -1,7 +1,7 @@
 #ifndef JAGUAR_DRIVER_H
 #define JAGUAR_DRIVER_H
 
-#include "nodes/statement_list.h"
+#include "nodes/statements/statement_list.h"
 #include <vector>
 #include <memory>
 
