@@ -30,7 +30,7 @@ find_package(LLVM 20.1.8 REQUIRED CONFIG)
 # =========================
 # EXECUTABLE
 # =========================
-add_executable(Jaguar
+add_executable(Jaguar ressources/icon.rc
   ${BISON_JaguarParser_OUTPUTS}
   main.cpp
 
@@ -53,6 +53,8 @@ add_executable(Jaguar
   #common
   src/llvm/mng.cpp
 )
+
+target_include_directories(Jaguar PRIVATE src)
 
 
 # =========================

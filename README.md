@@ -27,6 +27,7 @@ you will need
 - `llvm-20.1.8-windows-amd64-msvc17-msvcrt-dbg.7z` for debug mode.
 - `llvm-20.1.8-windows-amd64-msvc17-msvcrt.7z` for release mode.
 
+---
 
 ### CMAKE Config
 Mandatory Cmake options : 
@@ -36,7 +37,17 @@ Mandatory Cmake options :
 
 Use the `llvm-debug` for debug cmake profile and `llvm-release` for release profile
 
+## Installer
+
+### Windows
+The Jaguar installer uses Inno Setup Compiler, the inno project can be found at `installer/inno_jaguar_installer.iss`.
+You can open it using the latest version of Inni Setup Compiler at https://jrsoftware.org/isdl.php
+
+### MacOS
+
+### Linux
+
 
 # Use compiler API
 The jaguar compiler has a C-API for project integration, it uses one header file and one precompiled static library.
-You can use it to build intelisense, IDEs or others.
+You can use it to build intelisense, IDEs and others.

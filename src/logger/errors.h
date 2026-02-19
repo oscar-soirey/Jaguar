@@ -6,6 +6,7 @@ namespace jaguar::logger
 	typedef enum {
 		NO_ERROR,
 		FILE_OPEN_ERROR,
+		SYMBOL_NOT_FOUND,
 		TYPE_ERROR,
 		VALUE_ERROR,
 		QUOTE_NEVER_CLOSED,

@@ -47,6 +47,7 @@ namespace jaguar::parser
 	{
 		//Create int variable
 		llvm::AllocaInst* aAlloca = c->builder->CreateAlloca(c->GetLLVMType(var_type), nullptr, var_name);
+		c->AddSymbol(var_name.c_str(), aAlloca);
 		if (init)
 		{
 			c->builder->CreateStore(init->Codegen(c), aAlloca);

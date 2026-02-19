@@ -58,7 +58,7 @@ namespace jaguar::codegen
 			llvm::Function::Create(printfType,
 													 llvm::Function::ExternalLinkage,
 													 "printf", module);
-		AddSymbol("print", printfFunc);
+		//AddSymbol("print", printfFunc);
 	}
 
 	llvm::Type* CodegenContext::GetLLVMType(const std::string& t) const
@@ -84,7 +84,7 @@ namespace jaguar::codegen
 		return it->second;
 	}
 
-	void CodegenContext::AddSymbol(const char *s, llvm::Value *v)
+	void CodegenContext::AddSymbol(const char *s, llvm::AllocaInst* v)
 	{
 		auto it = symbolTable.find(s);
 		if (it == symbolTable.end())
