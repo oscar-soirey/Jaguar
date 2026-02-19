@@ -22,7 +22,7 @@ LLVM is used for generate intermediate representation of jaguar file and to comp
 Compiler (mandatory) : MSVC 2022 (the latest version if possible)
 Jaguar use the 20.1.8 version of LLVM
 
-If you want to update to a newer version, you can download it from https://github.com/vovkos/llvm-package-windows/releases
+If you want to update to a newer version, you can download it from https://github.com/vovkos/llvm-package-windows/releases .
 You will need :
 - `llvm-20.1.8-windows-amd64-msvc17-msvcrt-dbg.7z` for debug mode.
 - `llvm-20.1.8-windows-amd64-msvc17-msvcrt.7z` for release mode.
