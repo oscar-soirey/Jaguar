@@ -37,6 +37,8 @@ Mandatory Cmake options :
 
 Use the `llvm-debug` for debug cmake profile and `llvm-release` for release profile
 
+---
+
 ## Installer
 
 ### Windows
