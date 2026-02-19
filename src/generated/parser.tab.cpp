@@ -37,7 +37,7 @@
 
 
 // First part of user prologue.
-#line 42 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+#line 46 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -613,9 +613,44 @@ namespace jaguar { namespace parser {
         {
           switch (yyn)
             {
-  case 2: // statement: IDENTIFIER ASSIGN int_expr SEMICOLON
-#line 151 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                                     {
+  case 2: // statement: type_spec IDENTIFIER SEMICOLON
+#line 165 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                       {
+			std::string name = std::move(*(yystack_[1].value.strval));
+			std::string type = std::move(*(yystack_[2].value.strval));
+
+			(yylhs.value.stmt) = new VarDecl(
+				name,
+				type,
+				nullptr,
+				yystack_[2].location.begin.line,
+				yystack_[2].location.begin.column
+			);
+		}
+#line 631 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 3: // statement: type_spec IDENTIFIER ASSIGN opaque_expr SEMICOLON
+#line 178 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                                            {
+			std::string name = std::move(*(yystack_[3].value.strval));
+			std::string type = std::move(*(yystack_[4].value.strval));
+			//delete $2;
+			
+			(yylhs.value.stmt) = new VarDecl(
+				name, //name
+				type, //type
+				(yystack_[1].value.expr), //expression
+				yystack_[4].location.begin.line,
+				yystack_[4].location.begin.column
+			);
+		}
+#line 649 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 4: // statement: IDENTIFIER ASSIGN opaque_expr SEMICOLON
+#line 193 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                                          {
 			std::string name = std::move(*(yystack_[3].value.strval));
 			//delete $1;
 
@@ -626,214 +661,280 @@ namespace jaguar { namespace parser {
 				yystack_[3].location.begin.column
 			);
 		}
-#line 630 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 665 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 3: // statement: K_INT IDENTIFIER SEMICOLON
-#line 164 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                     {
-			std::string name = std::move(*(yystack_[1].value.strval));
-			//delete $2;
-
-			(yylhs.value.stmt) = new VarDecl(
-				name,
-				"int",
-				nullptr,
-				yystack_[2].location.begin.line,
-				yystack_[2].location.begin.column
-			);
-		}
-#line 647 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 4: // statement: K_INT IDENTIFIER ASSIGN int_expr SEMICOLON
-#line 177 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 5: // statement: IDENTIFIER LPAREN RPAREN SEMICOLON
+#line 206 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                                                      {
 			std::string name = std::move(*(yystack_[3].value.strval));
-			//delete $2;
-			
-			(yylhs.value.stmt) = new VarDecl(
-				name, //name
-				"int", //type
-				(yystack_[1].value.expr), //expression
-				yystack_[4].location.begin.line,
-				yystack_[4].location.begin.column
-			);
-		}
-#line 664 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 5: // statement: K_STRING IDENTIFIER SEMICOLON
-#line 192 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                        {
-			std::string name = std::move(*(yystack_[1].value.strval));
-			//delete $2;
-			
-			(yylhs.value.stmt) = new VarDecl(
+			(yylhs.value.stmt) = new FuncCall(
 				name,
-				"string",
-				nullptr,
-				yystack_[2].location.begin.line,
-				yystack_[2].location.begin.column
+				yystack_[3].location.begin.line,
+				yystack_[3].location.begin.column
 			);
 		}
-#line 681 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 678 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 6: // statement: K_STRING IDENTIFIER ASSIGN str_expr SEMICOLON
-#line 205 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                                        {
-			std::string name = std::move(*(yystack_[3].value.strval));
-			//delete $2;
-			
-			(yylhs.value.stmt) = new VarDecl(
-				name,
-				"string",
-				(yystack_[1].value.expr),
-				yystack_[4].location.begin.line,
-				yystack_[4].location.begin.column
-			);
-		}
-#line 698 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 7: // statement: block
-#line 220 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 6: // statement: block
+#line 216 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                 {
 			(yylhs.value.stmt) = (yystack_[0].value.stmt);
 		}
-#line 706 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 686 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 8: // program: %empty
-#line 225 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 7: // program: %empty
+#line 223 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                                      {
-			(yylhs.value.stmtList) = new StatementList(RootStatement, 0, 0); //location 0, 0
+			(yylhs.value.stmtList) = new StatementList(0, 0); //location 0, 0
 			driver.root = (yylhs.value.stmtList);
 		}
-#line 715 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 695 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 9: // program: program statement
-#line 229 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 8: // program: program statement
+#line 227 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                             {
 			(yystack_[1].value.stmtList)->Add((yystack_[0].value.stmt));
 			(yylhs.value.stmtList) = (yystack_[1].value.stmtList);
 		}
-#line 724 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 704 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 10: // stmt_list: %empty
-#line 239 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 9: // stmt_list: %empty
+#line 237 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                               {
-				(yylhs.value.stmtList) = new StatementList(None, 0, 0);
+				(yylhs.value.stmtList) = new StatementList(0, 0);
 		}
-#line 732 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 712 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 11: // stmt_list: stmt_list statement
-#line 242 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 10: // stmt_list: stmt_list statement
+#line 240 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                                       {
 				(yystack_[1].value.stmtList)->Add((yystack_[0].value.stmt));
 				(yylhs.value.stmtList) = (yystack_[1].value.stmtList);
 		}
-#line 741 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 721 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 12: // block: LBRACE stmt_list RBRACE
-#line 249 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                          {
-				(yylhs.value.stmt) = new BlockStatement((yystack_[1].value.stmtList), yystack_[2].location.begin.line, yystack_[2].location.begin.column);
-			}
-#line 749 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 13: // block: K_IF LPAREN int_expr RPAREN LBRACE stmt_list RBRACE
-#line 252 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                                                      {
-				(yylhs.value.stmt) = new IfStatement((yystack_[1].value.stmtList), (yystack_[4].value.expr), yystack_[6].location.begin.line, yystack_[6].location.begin.column);
-			}
-#line 757 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 14: // int_expr: L_INT
-#line 259 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                { //literal int, eg. 10, 46
-			(yylhs.value.expr) = new IntLiteral((yystack_[0].value.ival), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+  case 11: // block: LBRACE stmt_list RBRACE
+#line 247 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                  {
+			(yylhs.value.stmt) = new BlockStatement((yystack_[1].value.stmtList), yystack_[2].location.begin.line, yystack_[2].location.begin.column);
 		}
+#line 729 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 12: // block: K_IF LPAREN bool_expr RPAREN LBRACE stmt_list RBRACE
+#line 252 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                                               {
+			(yylhs.value.stmt) = new IfStatement((yystack_[1].value.stmtList), (yystack_[4].value.expr), yystack_[6].location.begin.line, yystack_[6].location.begin.column);
+		}
+#line 737 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 13: // block: type_spec IDENTIFIER LPAREN RPAREN LBRACE stmt_list RBRACE
+#line 257 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                                                     {
+			std::string name = *(yystack_[5].value.strval);
+			std::string ret_type = *(yystack_[6].value.strval);
+			(yylhs.value.stmt) = new FuncDecl(name, ret_type, (yystack_[1].value.stmtList), yystack_[6].location.begin.line, yystack_[6].location.begin.column);
+		}
+#line 747 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 14: // type_spec: K_INT
+#line 266 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                {(yylhs.value.strval) = new std::string("int");}
+#line 753 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 15: // type_spec: K_FLOAT
+#line 267 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                  {(yylhs.value.strval) = new std::string("float");}
+#line 759 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 16: // type_spec: K_STRING
+#line 268 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                   {(yylhs.value.strval) = new std::string("string");}
 #line 765 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 15: // int_expr: LPAREN int_expr RPAREN
-#line 262 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 17: // type_spec: K_BOOL
+#line 269 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                 {(yylhs.value.strval) = new std::string("bool");}
+#line 771 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 18: // type_spec: K_VOID
+#line 270 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                 {(yylhs.value.strval) = new std::string("void");}
+#line 777 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 19: // int_expr: L_INT
+#line 276 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                { //literal int, eg. 10, 46
+			(yylhs.value.expr) = new IntLiteral((yystack_[0].value.ival), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+		}
+#line 785 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 20: // int_expr: LPAREN int_expr RPAREN
+#line 279 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                                  {
 			(yylhs.value.expr) = (yystack_[1].value.expr);
 		}
-#line 773 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 793 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 16: // int_expr: IDENTIFIER
-#line 265 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 21: // int_expr: IDENTIFIER
+#line 282 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                      {
 			std::string name = *(yystack_[0].value.strval);
 			//delete $1;
 			(yylhs.value.expr) = new VarRef(name, yystack_[0].location.begin.line, yystack_[0].location.begin.column);
 		}
-#line 783 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 803 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 17: // int_expr: int_expr PLUS int_expr
-#line 270 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                 { //int plus operation, eg. 40 + 57
-			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), '+', yystack_[2].location.begin.line, yystack_[2].location.begin.column);
-		}
-#line 791 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 18: // int_expr: int_expr MINUS int_expr
-#line 273 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                  {
-			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), '-', yystack_[2].location.begin.line, yystack_[2].location.begin.column);
-		}
-#line 799 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 19: // int_expr: int_expr STAR int_expr
-#line 276 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                 {
-			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), '*', yystack_[2].location.begin.line, yystack_[2].location.begin.column);
-		}
-#line 807 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 20: // int_expr: int_expr SLASH int_expr
-#line 279 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
-                                  {
-			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), '/', yystack_[2].location.begin.line, yystack_[2].location.begin.column);
-		}
-#line 815 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
-    break;
-
-  case 21: // str_expr: L_STRING
+  case 22: // int_expr: int_expr PLUS int_expr
 #line 287 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                 { //int plus operation, eg. 40 + 57
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::PLUS, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 811 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 23: // int_expr: int_expr MINUS int_expr
+#line 290 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                  {
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::MINUS, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 819 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 24: // int_expr: int_expr STAR int_expr
+#line 293 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                 {
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::STAR, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 827 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 25: // int_expr: int_expr SLASH int_expr
+#line 296 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                  {
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::SLASH, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 835 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 26: // float_expr: L_FLOAT
+#line 302 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                  {  //literal float
+			(yylhs.value.expr) = new FloatLiteral((yystack_[0].value.fval), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+		}
+#line 843 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 27: // float_expr: LPAREN float_expr RPAREN
+#line 305 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                   {
+			(yylhs.value.expr) = (yystack_[1].value.expr);
+		}
+#line 851 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 28: // bool_expr: L_BOOL
+#line 312 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                 {
+			(yylhs.value.expr) = new BoolLiteral((yystack_[0].value.ival), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+		}
+#line 859 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 29: // bool_expr: LPAREN bool_expr RPAREN
+#line 315 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                  {
+			(yylhs.value.expr) = (yystack_[1].value.expr);
+		}
+#line 867 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 30: // bool_expr: IDENTIFIER
+#line 318 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                     {
+			std::string name = *(yystack_[0].value.strval);
+			(yylhs.value.expr) = new VarRef(name, yystack_[0].location.begin.line, yystack_[0].location.begin.column);
+		}
+#line 876 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 31: // bool_expr: bool_expr AND bool_expr
+#line 322 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                  {
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::AND, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 884 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 32: // bool_expr: bool_expr OR bool_expr
+#line 325 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                                 {
+			(yylhs.value.expr) = new BinaryOp((yystack_[2].value.expr), (yystack_[0].value.expr), BinaryOp::OR, yystack_[2].location.begin.line, yystack_[2].location.begin.column);
+		}
+#line 892 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 33: // str_expr: L_STRING
+#line 331 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                    {
 		(yylhs.value.expr) = new StringLiteral(*(yystack_[0].value.strval), yystack_[0].location.begin.line, yystack_[0].location.begin.column);
 		}
-#line 823 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 900 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
-  case 22: // str_expr: IDENTIFIER
-#line 290 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+  case 34: // str_expr: IDENTIFIER
+#line 334 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
                      {
 			std::string name = *(yystack_[0].value.strval);
 			//delete $1;
 			(yylhs.value.expr) = new VarRef(name, yystack_[0].location.begin.line, yystack_[0].location.begin.column);
 		}
-#line 833 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 910 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 35: // opaque_expr: int_expr
+#line 343 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                   { (yylhs.value.expr) = (yystack_[0].value.expr); }
+#line 916 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 36: // opaque_expr: float_expr
+#line 344 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                     { (yylhs.value.expr) = (yystack_[0].value.expr); }
+#line 922 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 37: // opaque_expr: bool_expr
+#line 345 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                    { (yylhs.value.expr) = (yystack_[0].value.expr); }
+#line 928 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+    break;
+
+  case 38: // opaque_expr: str_expr
+#line 346 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+                   { (yylhs.value.expr) = (yystack_[0].value.expr); }
+#line 934 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
     break;
 
 
-#line 837 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 938 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
             default:
               break;
@@ -1018,11 +1119,13 @@ namespace jaguar { namespace parser {
     {
     "end of file", "error", "invalid token", "PLUS", "MINUS", "STAR",
   "SLASH", "ASSIGN", "EQ", "NE", "LT", "LE", "GT", "GE", "AND", "OR",
-  "UMINUS", "NOT", "IDENTIFIER", "K_INT", "K_FLOAT", "K_STRING", "K_IF",
-  "K_ELSE", "K_WHILE", "K_FOR_LOOP", "K_FOR_EACH", "K_FOR_MAP", "LPAREN",
-  "RPAREN", "LBRACE", "RBRACE", "SEMICOLON", "COMMA", "DECORATOR",
-  "PREPROCESSOR", "L_INT", "L_STRING", "$accept", "statement", "program",
-  "stmt_list", "block", "int_expr", "str_expr", YY_NULLPTR
+  "UMINUS", "NOT", "IDENTIFIER", "K_INT", "K_FLOAT", "K_STRING", "K_BOOL",
+  "K_VOID", "K_IF", "K_ELSE", "K_WHILE", "K_FOR_LOOP", "K_FOR_EACH",
+  "K_FOR_MAP", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "SEMICOLON",
+  "COMMA", "DECORATOR", "PREPROCESSOR", "L_INT", "L_FLOAT", "L_STRING",
+  "L_BOOL", "$accept", "statement", "program", "stmt_list", "block",
+  "type_spec", "int_expr", "float_expr", "bool_expr", "str_expr",
+  "opaque_expr", YY_NULLPTR
     };
     return yy_sname[yysymbol];
   }
@@ -1155,92 +1258,113 @@ namespace jaguar { namespace parser {
   }
 
 
-  const signed char parser::yypact_ninf_ = -7;
+  const signed char parser::yypact_ninf_ = -60;
 
-  const signed char parser::yytable_ninf_ = -1;
+  const signed char parser::yytable_ninf_ = -31;
 
   const signed char
   parser::yypact_[] =
   {
-      -7,     0,    -7,    20,    14,    15,     1,    -7,    -7,    -7,
-      10,    -6,    13,    10,    30,    -7,    10,    -7,    -1,    10,
-      -7,     5,    -7,     7,    -7,    -7,    11,    10,    10,    10,
-      10,    -7,     3,    -7,    -7,     2,     9,    -7,    19,    19,
-      -7,    -7,    -7,    -7,    -7,    44,    -7
+     -60,     9,   -60,    13,   -60,   -60,   -60,   -60,   -60,   -12,
+     -60,   -60,   -60,    -8,    18,    -9,    19,    55,    10,     1,
+      24,   -60,   -60,   -60,   -60,    65,   -60,    31,   -60,    21,
+      27,   -60,    19,   -10,   -60,   -60,    18,    16,   -60,     1,
+       8,    22,    36,    34,    34,    34,    34,    19,    19,   -60,
+     -60,    57,    32,    58,   -60,   -60,   -60,   -60,    34,    -4,
+      -4,   -60,   -60,   -60,    77,   -60,   -60,   -60,    62,    78,
+     -60,   -60
   };
 
   const signed char
   parser::yydefact_[] =
   {
-       8,     0,     1,     0,     0,     0,     0,    10,     9,     7,
-       0,     0,     0,     0,     0,    16,     0,    14,     0,     0,
-       3,     0,     5,     0,    12,    11,     0,     0,     0,     0,
-       0,     2,     0,    22,    21,     0,     0,    15,    17,    18,
-      19,    20,     4,     6,    10,     0,    13
+       7,     0,     1,     0,    14,    15,    16,    17,    18,     0,
+       9,     8,     6,     0,     0,     0,     0,     0,     0,    21,
+       0,    19,    26,    33,    28,    35,    36,    37,    38,     0,
+       0,    30,     0,     0,    11,    10,     0,     0,     2,    21,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     4,
+       5,     0,     0,     0,    20,    27,    29,    21,     0,    22,
+      23,    24,    25,    31,    32,     9,     3,     9,     0,     0,
+      12,    13
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-      -7,    36,    -7,     6,    -7,    28,    -7
+     -60,    91,   -60,   -59,   -60,   -60,   -20,    73,   -13,   -60,
+      67
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-       0,    25,     1,    14,     9,    18,    35
+       0,    35,     1,    17,    12,    13,    25,    26,    27,    28,
+      29
   };
 
   const signed char
   parser::yytable_[] =
   {
-       2,    19,    27,    28,    29,    30,    27,    28,    29,    30,
-      27,    28,    29,    30,    27,    28,    29,    30,     3,     4,
-      21,     5,     6,    33,    29,    30,    20,    10,    15,    13,
-       7,    31,    11,    12,    43,    42,    36,     8,    16,    44,
-      37,    23,    34,     0,    26,    22,    17,    32,     3,     4,
-      45,     5,     6,     0,     0,    38,    39,    40,    41,     0,
-       7,    24,     3,     4,     0,     5,     6,     0,     0,     0,
-       0,     0,     0,     0,     7,    46
+      40,    45,    46,    33,    47,    48,    68,    42,    69,     2,
+      18,    43,    44,    45,    46,   -30,   -30,    36,    16,    42,
+      14,    51,    30,    59,    60,    61,    62,     3,     4,     5,
+       6,     7,     8,     9,    63,    64,    19,    31,    40,    54,
+      37,    10,    39,    15,    38,    47,    48,    53,    20,    32,
+      47,    48,    57,    55,    20,    49,    21,    22,    23,    24,
+      24,    50,    21,    22,    58,    24,    66,    56,    43,    44,
+      45,    46,    21,     3,     4,     5,     6,     7,     8,     9,
+       3,     4,     5,     6,     7,     8,     9,    10,    34,    65,
+      67,    47,    11,    41,    10,    70,     3,     4,     5,     6,
+       7,     8,     9,    52,     0,     0,     0,     0,     0,     0,
+      10,    71
   };
 
   const signed char
   parser::yycheck_[] =
   {
-       0,     7,     3,     4,     5,     6,     3,     4,     5,     6,
-       3,     4,     5,     6,     3,     4,     5,     6,    18,    19,
-       7,    21,    22,    18,     5,     6,    32,     7,    18,    28,
-      30,    32,    18,    18,    32,    32,    29,     1,    28,    30,
-      29,    13,    37,    -1,    16,    32,    36,    19,    18,    19,
-      44,    21,    22,    -1,    -1,    27,    28,    29,    30,    -1,
-      30,    31,    18,    19,    -1,    21,    22,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    30,    31
+      20,     5,     6,    16,    14,    15,    65,    20,    67,     0,
+      18,     3,     4,     5,     6,    14,    15,     7,    30,    32,
+       7,    31,    31,    43,    44,    45,    46,    18,    19,    20,
+      21,    22,    23,    24,    47,    48,    18,    18,    58,    31,
+      30,    32,    18,    30,    34,    14,    15,    31,    30,    30,
+      14,    15,    18,    31,    30,    34,    38,    39,    40,    41,
+      41,    34,    38,    39,    30,    41,    34,    31,     3,     4,
+       5,     6,    38,    18,    19,    20,    21,    22,    23,    24,
+      18,    19,    20,    21,    22,    23,    24,    32,    33,    32,
+      32,    14,     1,    20,    32,    33,    18,    19,    20,    21,
+      22,    23,    24,    36,    -1,    -1,    -1,    -1,    -1,    -1,
+      32,    33
   };
 
   const signed char
   parser::yystos_[] =
   {
-       0,    40,     0,    18,    19,    21,    22,    30,    39,    42,
-       7,    18,    18,    28,    41,    18,    28,    36,    43,     7,
-      32,     7,    32,    43,    31,    39,    43,     3,     4,     5,
-       6,    32,    43,    18,    37,    44,    29,    29,    43,    43,
-      43,    43,    32,    32,    30,    41,    31
+       0,    44,     0,    18,    19,    20,    21,    22,    23,    24,
+      32,    43,    46,    47,     7,    30,    30,    45,    18,    18,
+      30,    38,    39,    40,    41,    48,    49,    50,    51,    52,
+      31,    18,    30,    50,    33,    43,     7,    30,    34,    18,
+      48,    49,    50,     3,     4,     5,     6,    14,    15,    34,
+      34,    31,    52,    31,    31,    31,    31,    18,    30,    48,
+      48,    48,    48,    50,    50,    32,    34,    32,    45,    45,
+      33,    33
   };
 
   const signed char
   parser::yyr1_[] =
   {
-       0,    38,    39,    39,    39,    39,    39,    39,    40,    40,
-      41,    41,    42,    42,    43,    43,    43,    43,    43,    43,
-      43,    44,    44
+       0,    42,    43,    43,    43,    43,    43,    44,    44,    45,
+      45,    46,    46,    46,    47,    47,    47,    47,    47,    48,
+      48,    48,    48,    48,    48,    48,    49,    49,    50,    50,
+      50,    50,    50,    51,    51,    52,    52,    52,    52
   };
 
   const signed char
   parser::yyr2_[] =
   {
-       0,     2,     4,     3,     5,     3,     5,     1,     0,     2,
-       0,     2,     3,     7,     1,     3,     1,     3,     3,     3,
-       3,     1,     1
+       0,     2,     3,     5,     4,     4,     1,     0,     2,     0,
+       2,     3,     7,     7,     1,     1,     1,     1,     1,     1,
+       3,     1,     3,     3,     3,     3,     1,     3,     1,     3,
+       1,     3,     3,     1,     1,     1,     1,     1,     1
   };
 
 
@@ -1250,9 +1374,10 @@ namespace jaguar { namespace parser {
   const short
   parser::yyrline_[] =
   {
-       0,   151,   151,   164,   177,   192,   205,   220,   225,   229,
-     239,   242,   249,   252,   259,   262,   265,   270,   273,   276,
-     279,   287,   290
+       0,   165,   165,   178,   193,   206,   216,   223,   227,   237,
+     240,   247,   252,   257,   266,   267,   268,   269,   270,   276,
+     279,   282,   287,   290,   293,   296,   302,   305,   312,   315,
+     318,   322,   325,   331,   334,   343,   344,   345,   346
   };
 
   void
@@ -1320,10 +1445,10 @@ namespace jaguar { namespace parser {
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37
+      35,    36,    37,    38,    39,    40,    41
     };
     // Last valid token kind.
-    const int code_max = 292;
+    const int code_max = 296;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -1335,6 +1460,6 @@ namespace jaguar { namespace parser {
 
 #line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 } } // jaguar::parser
-#line 1339 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
+#line 1464 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.cpp"
 
-#line 296 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+#line 350 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"

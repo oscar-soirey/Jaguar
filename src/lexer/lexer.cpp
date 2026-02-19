@@ -22,18 +22,25 @@ namespace jaguar::lexer
 			{"int", K_INT},
 			{"float", K_FLOAT},
 			{"string", K_STRING},
+			{"void", K_VOID},
+			{"bool", K_BOOL},
+			{"true", L_BOOL},
+			{"false", L_BOOL},
 			{"if", K_IF},
 			{"else", K_ELSE},
 			{"while", K_WHILE}
 		};
-		const std::unordered_set<char> operatorChars = { '+', '-', '*', '/', '=', '&', '|', ':', '.'};
+		const std::unordered_set<char> operatorChars = { '+', '-', '*', '/', '=', '&', '|', ':', '.', '!' };
 		const std::unordered_map<std::string, jaguar::parser::parser::token::token_kind_type> operators = { 
 			{"=", ASSIGN},
 			{"+", PLUS},
 			{"-", MINUS},
 			{"*", STAR},
 			{"/", SLASH},
+			{"&&", AND},
+			{"||", OR},
 			{"==", EQ},
+			{"!=", NE}
 		};
 		const std::unordered_map<char, jaguar::parser::parser::token::token_kind_type> separators = {
 			{';', SEMICOLON},
@@ -92,7 +99,7 @@ namespace jaguar::lexer
 					column += 2;
 				}
 			}
-			//is word (identifier or keyword)
+			//is word (identifier, keyword or bool literal)
 			else if (std::isalpha(data[i]) || data[i] == '_')
 			{
 				//start of a token
@@ -109,10 +116,15 @@ namespace jaguar::lexer
 				std::string word = data.substr(start, i - start);
 
 				auto it = data::keywords.find(word);
+
 				//the word is a knowed keyword
 				if (it != data::keywords.end())
 				{
 					token.type = it->second;
+					if (it->second == L_BOOL)
+					{
+						token.i_val = word == "true";
+					}
 				}
 				else
 				{
@@ -135,14 +147,14 @@ namespace jaguar::lexer
 					if (data[i] == '.')
 					{
 						//if yes, there is multiple dots in the literal, error
-						if (token.type == K_FLOAT)
+						if (token.type == L_FLOAT)
 						{
 							//if type is already a float, there is mutliple dots in the number, error
 							logger::LogError(logger::LITERAL_FLOAT_ERROR, "Multiple dots in a literal float declaration");
 							return{};
 						}
 						//if dot in the literal, set type to decimal number
-						token.type = K_FLOAT;
+						token.type = L_FLOAT;
 					}
 					i++;
 					column++;
@@ -152,7 +164,7 @@ namespace jaguar::lexer
 
 				//try convert the value from string to int or float
 				try {
-						if (token.type == K_FLOAT)
+						if (token.type == L_FLOAT)
 								token.f_val = std::stof(num);
 						else
 								token.i_val = std::stoi(num);

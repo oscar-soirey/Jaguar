@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../expression.h"
+#include <llvm/IR/Constants.h>
+#include "../../../../llvm/mng.h"
 
 namespace jaguar::parser
 {
@@ -12,6 +14,15 @@ namespace jaguar::parser
 		std::string GetExpressionString() override
 		{
 			return { "IntLiteral(" + std::to_string(value) + ")" };
+		}
+
+  	llvm::Value* Codegen(codegen::CodegenContext *c) override
+		{
+			return llvm::ConstantInt::get(
+				c->GetLLVMType("int"),
+				value,
+				false //signed
+				);
 		}
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace jaguar::parser
 {
-	StatementList::StatementList(node_type_e t, int l, int c) : Statement(t,l,c) {}
+	StatementList::StatementList(int l, int c) : Statement(l,c) {}
 
 	void StatementList::Add(ASTNode* n)
 	{

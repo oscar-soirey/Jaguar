@@ -7,12 +7,12 @@ namespace jaguar::parser
 {
 	class Statement : public ASTNode {
 	public:
-		Statement(node_type_e t, int l, int c) : ASTNode(t,l,c) {}
+		Statement(int l, int c) : ASTNode(l,c) {}
 
 		void Print(int indent = 0) override {}
 		void CheckSemantics() override {}
 
-		LLVMValue* Codegen(codegen::CodegenContext* c) override { return nullptr; }
+		llvm::Value* Codegen(codegen::CodegenContext* c) override { return nullptr; }
 	};
 }
 

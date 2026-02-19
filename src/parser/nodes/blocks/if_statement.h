@@ -5,7 +5,7 @@
 
 namespace jaguar::parser
 {
-	class IfStatement :public BlockStatement {
+	class IfStatement : public BlockStatement {
 	public:
     Expression* condition;
 
@@ -17,7 +17,7 @@ namespace jaguar::parser
       printf("%sIf statement, condition : %s\n", i.c_str(), condition->GetExpressionString().c_str());
 			for (const auto& s : body->statements)
 			{
-				s->Print(indent + 2);
+				s->Print(indent + 4);
 			}
 		}
 	};

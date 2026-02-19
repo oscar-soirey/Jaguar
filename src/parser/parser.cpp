@@ -6,9 +6,9 @@ namespace jaguar::parser
 {
 	int currentToken = 0;
 
-	int yylex(jaguar::parser::parser::semantic_type* yylval, jaguar::parser::parser::location_type* yylloc)
+	int yylex(parser::semantic_type* yylval, parser::location_type* yylloc)
 	{
-		using enum jaguar::parser::parser::token::token_kind_type;
+		using enum parser::token::token_kind_type;
 
 		if(currentToken >= tokens_.size())
 		{
@@ -27,8 +27,16 @@ namespace jaguar::parser
 				yylval->ival = tok.i_val;
 				break;
 			}
+			case(L_FLOAT): {
+				yylval->fval = tok.f_val;
+				break;
+			}
 			case(L_STRING): {
 				yylval->strval = &tok.str_val;
+				break;
+			}
+			case(L_BOOL): {
+				yylval->ival = tok.i_val;
 				break;
 			}
 		}
@@ -38,8 +46,6 @@ namespace jaguar::parser
 		currentToken++;
 		return tok.type;
 	}
-
-	using namespace jaguar::parser;
 
 	//syntax error handling
 	void parser::error(const location_type& loc, const std::string& msg)

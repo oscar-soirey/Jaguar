@@ -13,6 +13,9 @@
 
 #include "src/llvm/mng.h"
 
+//#define PrintTokens
+#define CompileToLLVM
+
 int main()
 {
   //Read file
@@ -21,6 +24,13 @@ int main()
 
   //Tokenizing
 	jaguar::parser::tokens_ = jaguar::lexer::Tokenize(file, fileSize);
+
+#ifdef PrintTokens
+	for (const auto& t : jaguar::parser::tokens_)
+	{
+		printf("Token : %d, value : %d\n", t.type, t.i_val);
+	}
+#endif
 
   //Build the AST
 	jaguar::parser::Driver driver{};
@@ -68,7 +78,7 @@ int main()
 
 
 	//delete context after llvm use
-	delete codegen_context;
+	delete codegen_context ;
 
 #endif
 

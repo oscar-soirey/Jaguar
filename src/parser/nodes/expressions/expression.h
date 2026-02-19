@@ -2,21 +2,20 @@
 #define JAGUAR_EXPRESSION_H
 
 #include "../ast_node.h"
+#include <llvm/IR/Value.h>
 #include <string>
 
 namespace jaguar::parser
 {
 	class Expression : public ASTNode {
 	public:
-		Expression(int line, int column) : ASTNode(Expr, line, column) {}
+		Expression(int line, int column) : ASTNode(line, column) {}
 		virtual ~Expression()=default;
 
 		virtual std::string GetExpressionString() { return {}; }
 		
 		void Print(int indent = 0) override {}
 		void CheckSemantics() override {}
-
-		LLVMValue* Codegen(codegen::CodegenContext* c) override { return nullptr; }
 	};
 }
 

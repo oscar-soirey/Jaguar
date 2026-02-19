@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ast_node.h"
 #include "../expressions/expression.h"
+#include "statement.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@ namespace jaguar::parser
     std::string var_name;
     Expression* expr;
 
-    VarAssign(std::string n, Expression* e, int l, int c) : var_name(n), expr(e), Statement(VariableAssignement, l, c) {}
+    VarAssign(std::string n, Expression* e, int l, int c) : var_name(n), expr(e), Statement(l, c) {}
 		
 		void Print(int indent = 0) override
     {
@@ -21,6 +21,6 @@ namespace jaguar::parser
     }
 		void CheckSemantics() override {}
 
-		LLVMValue* Codegen(codegen::CodegenContext* c) override { return nullptr; }
+		llvm::Value* Codegen(codegen::CodegenContext* c) override { return nullptr; }
   };
 }

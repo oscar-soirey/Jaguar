@@ -25,7 +25,7 @@ if(MSVC)
   add_compile_options(/wd4624)
 endif()
 
-find_package(LLVM 21.1.1 REQUIRED CONFIG)
+find_package(LLVM 20.1.8 REQUIRED CONFIG)
 
 # =========================
 # EXECUTABLE

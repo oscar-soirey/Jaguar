@@ -54,15 +54,19 @@
 #include "../parser/nodes/statements/statement_list.h"
 #include "../parser/nodes/statements/var_decl.h"
 #include "../parser/nodes/statements/var_assign.h"
+#include "../parser/nodes/statements/func_call.h"
 
 #include "../parser/nodes/expressions/expression.h"
 #include "../parser/nodes/expressions/binary_op.h"
 #include "../parser/nodes/expressions/var_ref.h"
 #include "../parser/nodes/expressions/literal/int_literal.h"
+#include "../parser/nodes/expressions/literal/float_literal.h"
 #include "../parser/nodes/expressions/literal/string_literal.h"
+#include "../parser/nodes/expressions/literal/bool_literal.h"
 
 #include "../parser/nodes/blocks/block_statement.h"
 #include "../parser/nodes/blocks/if_statement.h"
+#include "../parser/nodes/blocks/func_decl.h"
 
 //location structure for debugging
 struct location_t {
@@ -77,7 +81,7 @@ struct location_t {
 	location_t() : begin{0,0}, end{0,0} {}
 };
 
-#line 81 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 85 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -213,7 +217,7 @@ struct location_t {
 
 #line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 namespace jaguar { namespace parser {
-#line 217 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 221 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 
@@ -231,19 +235,18 @@ namespace jaguar { namespace parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 51 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
+#line 55 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 
 	int ival;
 	float fval;
 	std::string* strval;
-	bool bval;
 
 	ASTNode* node;
 	Statement* stmt;
 	StatementList* stmtList;
 	Expression* expr;
 
-#line 247 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 250 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
     };
 #endif
@@ -299,22 +302,26 @@ namespace jaguar { namespace parser {
     K_INT = 274,                   // K_INT
     K_FLOAT = 275,                 // K_FLOAT
     K_STRING = 276,                // K_STRING
-    K_IF = 277,                    // K_IF
-    K_ELSE = 278,                  // K_ELSE
-    K_WHILE = 279,                 // K_WHILE
-    K_FOR_LOOP = 280,              // K_FOR_LOOP
-    K_FOR_EACH = 281,              // K_FOR_EACH
-    K_FOR_MAP = 282,               // K_FOR_MAP
-    LPAREN = 283,                  // LPAREN
-    RPAREN = 284,                  // RPAREN
-    LBRACE = 285,                  // LBRACE
-    RBRACE = 286,                  // RBRACE
-    SEMICOLON = 287,               // SEMICOLON
-    COMMA = 288,                   // COMMA
-    DECORATOR = 289,               // DECORATOR
-    PREPROCESSOR = 290,            // PREPROCESSOR
-    L_INT = 291,                   // L_INT
-    L_STRING = 292                 // L_STRING
+    K_BOOL = 277,                  // K_BOOL
+    K_VOID = 278,                  // K_VOID
+    K_IF = 279,                    // K_IF
+    K_ELSE = 280,                  // K_ELSE
+    K_WHILE = 281,                 // K_WHILE
+    K_FOR_LOOP = 282,              // K_FOR_LOOP
+    K_FOR_EACH = 283,              // K_FOR_EACH
+    K_FOR_MAP = 284,               // K_FOR_MAP
+    LPAREN = 285,                  // LPAREN
+    RPAREN = 286,                  // RPAREN
+    LBRACE = 287,                  // LBRACE
+    RBRACE = 288,                  // RBRACE
+    SEMICOLON = 289,               // SEMICOLON
+    COMMA = 290,                   // COMMA
+    DECORATOR = 291,               // DECORATOR
+    PREPROCESSOR = 292,            // PREPROCESSOR
+    L_INT = 293,                   // L_INT
+    L_FLOAT = 294,                 // L_FLOAT
+    L_STRING = 295,                // L_STRING
+    L_BOOL = 296                   // L_BOOL
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -331,7 +338,7 @@ namespace jaguar { namespace parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 38, ///< Number of tokens.
+        YYNTOKENS = 42, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -355,29 +362,37 @@ namespace jaguar { namespace parser {
         S_K_INT = 19,                            // K_INT
         S_K_FLOAT = 20,                          // K_FLOAT
         S_K_STRING = 21,                         // K_STRING
-        S_K_IF = 22,                             // K_IF
-        S_K_ELSE = 23,                           // K_ELSE
-        S_K_WHILE = 24,                          // K_WHILE
-        S_K_FOR_LOOP = 25,                       // K_FOR_LOOP
-        S_K_FOR_EACH = 26,                       // K_FOR_EACH
-        S_K_FOR_MAP = 27,                        // K_FOR_MAP
-        S_LPAREN = 28,                           // LPAREN
-        S_RPAREN = 29,                           // RPAREN
-        S_LBRACE = 30,                           // LBRACE
-        S_RBRACE = 31,                           // RBRACE
-        S_SEMICOLON = 32,                        // SEMICOLON
-        S_COMMA = 33,                            // COMMA
-        S_DECORATOR = 34,                        // DECORATOR
-        S_PREPROCESSOR = 35,                     // PREPROCESSOR
-        S_L_INT = 36,                            // L_INT
-        S_L_STRING = 37,                         // L_STRING
-        S_YYACCEPT = 38,                         // $accept
-        S_statement = 39,                        // statement
-        S_program = 40,                          // program
-        S_stmt_list = 41,                        // stmt_list
-        S_block = 42,                            // block
-        S_int_expr = 43,                         // int_expr
-        S_str_expr = 44                          // str_expr
+        S_K_BOOL = 22,                           // K_BOOL
+        S_K_VOID = 23,                           // K_VOID
+        S_K_IF = 24,                             // K_IF
+        S_K_ELSE = 25,                           // K_ELSE
+        S_K_WHILE = 26,                          // K_WHILE
+        S_K_FOR_LOOP = 27,                       // K_FOR_LOOP
+        S_K_FOR_EACH = 28,                       // K_FOR_EACH
+        S_K_FOR_MAP = 29,                        // K_FOR_MAP
+        S_LPAREN = 30,                           // LPAREN
+        S_RPAREN = 31,                           // RPAREN
+        S_LBRACE = 32,                           // LBRACE
+        S_RBRACE = 33,                           // RBRACE
+        S_SEMICOLON = 34,                        // SEMICOLON
+        S_COMMA = 35,                            // COMMA
+        S_DECORATOR = 36,                        // DECORATOR
+        S_PREPROCESSOR = 37,                     // PREPROCESSOR
+        S_L_INT = 38,                            // L_INT
+        S_L_FLOAT = 39,                          // L_FLOAT
+        S_L_STRING = 40,                         // L_STRING
+        S_L_BOOL = 41,                           // L_BOOL
+        S_YYACCEPT = 42,                         // $accept
+        S_statement = 43,                        // statement
+        S_program = 44,                          // program
+        S_stmt_list = 45,                        // stmt_list
+        S_block = 46,                            // block
+        S_type_spec = 47,                        // type_spec
+        S_int_expr = 48,                         // int_expr
+        S_float_expr = 49,                       // float_expr
+        S_bool_expr = 50,                        // bool_expr
+        S_str_expr = 51,                         // str_expr
+        S_opaque_expr = 52                       // opaque_expr
       };
     };
 
@@ -884,8 +899,8 @@ namespace jaguar { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 75,     ///< Last index in yytable_.
-      yynnts_ = 7,  ///< Number of nonterminal symbols.
+      yylast_ = 111,     ///< Last index in yytable_.
+      yynnts_ = 11,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
 
@@ -898,7 +913,7 @@ namespace jaguar { namespace parser {
 
 #line 3 "E:/Code/Horizon/Jaguar/src/parser/jaguar.y"
 } } // jaguar::parser
-#line 902 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
+#line 917 "E:/Code/Horizon/Jaguar/src/generated/parser.tab.hpp"
 
 
 

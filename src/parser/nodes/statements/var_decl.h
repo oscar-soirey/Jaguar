@@ -21,7 +21,7 @@ namespace jaguar::parser
 		void Print(int indent) override;
 		void CheckSemantics() override;
 
-		LLVMValue* Codegen(codegen::CodegenContext *c) override;
+		llvm::Value* Codegen(codegen::CodegenContext *c) override;
 	};
 }
 

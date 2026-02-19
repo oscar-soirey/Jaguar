@@ -49,15 +49,15 @@ namespace jaguar::codegen
 	{
 		//print
 		llvm::FunctionType* printfType =
-				llvm::FunctionType::get(
-						llvm::IntegerType::getInt32Ty(*context),
-						{ llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0) },
-						true // varargs
-				);
+			llvm::FunctionType::get(
+				llvm::IntegerType::getInt32Ty(*context),
+				{ llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0) },
+				true //varargs
+			);
 		llvm::Function* printfFunc =
-				llvm::Function::Create(printfType,
-															 llvm::Function::ExternalLinkage,
-															 "printf", module);
+			llvm::Function::Create(printfType,
+													 llvm::Function::ExternalLinkage,
+													 "printf", module);
 		AddSymbol("print", printfFunc);
 	}
 
@@ -66,6 +66,10 @@ namespace jaguar::codegen
 		if (t == "int")
 		{
 			return builder->getInt32Ty();
+		}
+		if (t == "float")
+		{
+			return builder->getFloatTy();
 		}
 		return nullptr;
 	}

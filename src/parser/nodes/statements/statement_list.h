@@ -10,13 +10,13 @@ namespace jaguar::parser
 	public:
 		std::vector<ASTNode*> statements;
 
-		StatementList(node_type_e t, int l, int c);
+		StatementList(int l, int c);
 
 		void Add(ASTNode* n);
 		
 		void Print(int indent = 0) override {}
 		void CheckSemantics() override {}
 
-		LLVMValue* Codegen(codegen::CodegenContext* c) override { return nullptr; }
+		llvm::Value* Codegen(codegen::CodegenContext* c) override { return nullptr; }
 	};
 }

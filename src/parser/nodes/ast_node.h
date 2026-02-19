@@ -1,6 +1,8 @@
 #ifndef JAGUAR_AST_NODE_H
 #define JAGUAR_AST_NODE_H
 
+#include <llvm/IR/Value.h>
+
 //forward declarations
 struct LLVMValue;
 namespace jaguar::codegen
@@ -11,24 +13,12 @@ namespace jaguar::codegen
 
 namespace jaguar::parser
 {
-	typedef enum {
-		None,
-		VariableDeclation,
-		VariableAssignement,
-		FunctionDeclation,
-		ClassDeclaration,
-		Expr,
-		Literal,
-		RootStatement
-	}node_type_e;
-
 	class ASTNode {
 	public:
 		int line;
 		int column;
-		node_type_e type;
 
-		ASTNode(node_type_e t, int l, int c) : type(t), line(l), column(c) {}
+		ASTNode(int l, int c) : line(l), column(c) {}
 		virtual ~ASTNode()=default;
 
 		//Debugging
@@ -38,7 +28,7 @@ namespace jaguar::parser
 		virtual void CheckSemantics()=0;
 
 		//IR Generation
-		virtual LLVMValue* Codegen(codegen::CodegenContext* c) { return nullptr; }
+		virtual llvm::Value* Codegen(codegen::CodegenContext* c) { return nullptr; }
 	};
 }
 
