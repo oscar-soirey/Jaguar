@@ -7,14 +7,8 @@ namespace jaguar::parser
   class BoolLiteral : public Expression {
 	public:
 		bool value;
-		BoolLiteral(bool v, int line, int col) : value(v), Expression(line, col) {}
+		BoolLiteral(bool v, int line, int col);
 		
-		std::string GetExpressionString() override
-		{
-			std::string val;
-			if (value == true) val = "true";
-			else val = "false";
-			return { "BoolLiteral(" + val + ")" };
-		}
+		std::string GetExpressionString() override;
 	};
 }

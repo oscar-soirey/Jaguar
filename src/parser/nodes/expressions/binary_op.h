@@ -17,20 +17,11 @@ namespace jaguar::parser
 		Expression* rexpr;
   	operator_e operator_;
 
-		BinaryOp(Expression* le, Expression* re, operator_e op, int line, int col) : lexpr(le), rexpr(re), operator_(op), Expression(line, col) {}
+		BinaryOp(Expression* le, Expression* re, operator_e op, int line, int col);
 
-		std::string GetExpressionString() override
-		{
-			return {lexpr->GetExpressionString() + " " + operators_str[operator_] + " " + rexpr->GetExpressionString()};
-		}
+		std::string GetExpressionString() override;
 
-  	llvm::Value* Codegen(codegen::CodegenContext *c) override
-		{
-			//Int
-			return c->builder->CreateAdd(lexpr->Codegen(c), rexpr->Codegen(c), "addtmp");
-			//float
-			return c->builder->CreateFAdd(lexpr->Codegen(c), rexpr->Codegen(c), "faddtmp");
-		}
+  	llvm::Value* Codegen(codegen::CodegenContext *c) override;
 
   private:
   	const char* operators_str[12] = {  //useful for print the operator type
