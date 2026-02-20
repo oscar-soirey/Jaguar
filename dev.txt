@@ -1,0 +1,16 @@
+Jaguar Version 0.2.0 :
+
+Centraliser les types avec un enum et un ficher types.h
+Creer pour chaque header un cpp associé
+Stocker des données supplémentaires pour les symboles
+API C Stable avec macros
+Fonction StopCompile() en cas d'erreur, pour ne pas accumuler les erreurs
+AST visualizer
+Fichiers mieux organisés
+Renommer les parametres à un nom entier
+
+Les versions seront, une fois la sortie données selon le format:
+//année.majeure.mineure
+exemple : 26.2.4
+majeure : nouvelles features,
+mineure : correction de bug ou microfeature

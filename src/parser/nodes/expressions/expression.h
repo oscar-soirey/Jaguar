@@ -7,21 +7,17 @@
 #include <map>
 #include <optional>
 
-#include <llvm/IR/Value.h>
+#include "../../../types.h"
 
 namespace jaguar::parser
 {
-	typedef enum {
-		Int, Float, Bool, String
-	}type_kind_e;
-
 	//useful for type verification, eg., int+float okay. int+string error.
-	using TypePair = std::pair<type_kind_e, type_kind_e>;
+	using TypePair = std::pair<Jaguar_Type_e, Jaguar_Type_e>;
 	struct OperatorInfo
 	{
-		std::map<TypePair, type_kind_e> rules;
+		std::map<TypePair, Jaguar_Type_e> rules;
 
-		std::optional<type_kind_e> getResult(type_kind_e left, type_kind_e right) const
+		std::optional<Jaguar_Type_e> getResult(Jaguar_Type_e left, Jaguar_Type_e right) const
 		{
 			auto it = rules.find({left, right});
 			if (it != rules.end())
@@ -47,21 +43,14 @@ namespace jaguar::parser
 
 	class Expression : public ASTNode {
 	public:
-		Expression(int line, int column) : ASTNode(line, column) {}
-		virtual ~Expression()=default;
+		Expression(int _line, int _column);
 
-		virtual std::string GetExpressionString() { return {}; }
-		
-		void Print(int indent = 0) override {}
-		void CheckSemantics() override {}
+		virtual std::string GetExpressionString()=0;
 
-		type_kind_e GetType() const
-		{
-			return type_;
-		}
+		Jaguar_Type_e GetType() const;
 
 	protected:
-		type_kind_e type_;
+		Jaguar_Type_e type_;
 	};
 }
 

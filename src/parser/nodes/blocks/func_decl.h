@@ -2,6 +2,7 @@
 
 #include "block_statement.h"
 #include "../expressions/expression.h"
+#include <llvm/mng.h>
 
 namespace jaguar::parser
 {
@@ -21,6 +22,39 @@ namespace jaguar::parser
 			{
 				s->Print(indent + 4);
 			}
+		}
+
+		llvm::Value* Codegen(codegen::CodegenContext *c) override
+		{
+			//create signature
+			llvm::FunctionType* funcType = llvm::FunctionType::get(
+				c->GetLLVMType(return_type.c_str()),
+				{},
+				false
+			);
+			//create function
+			llvm::Function* func = llvm::Function::Create(
+				funcType,
+				llvm::GlobalValue::ExternalLinkage,
+				func_name,
+				c->module
+			);
+			//create entry point
+			llvm::BasicBlock* entry = llvm::BasicBlock::Create(*c->context, "entry", func);
+			c->builder->SetInsertPoint(entry);
+
+			//function body
+			for (const auto& s : body->statements)
+			{
+				s->Codegen(c);
+			}
+
+			//modifier ca pour éviter d'écrire la suite des instructions dans la fonction
+			//c->builder->SetInsertPoint(nullptr);
+
+			c->func_symbols.emplace(func_name.c_str(), func);
+
+			return func;
 		}
 	};
 }

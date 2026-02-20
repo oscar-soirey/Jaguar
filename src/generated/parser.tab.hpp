@@ -332,6 +332,7 @@ namespace jaguar { namespace parser {
 
     /// Backward compatibility alias (Bison 3.6).
     typedef token_kind_type token_type;
+    typedef token_kind_type token_type;
 
     /// Symbol kinds.
     struct symbol_kind

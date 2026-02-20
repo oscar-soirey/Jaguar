@@ -45,13 +45,15 @@ add_executable(Jaguar ressources/icon.rc
 
   #parser
   src/parser/parser.cpp
+  src/parser/nodes/nodes.cpp
 
   #AST Nodes
-  src/parser/nodes/statements/var_decl.cpp
-  src/parser/nodes/statements/statement_list.cpp
 
   #common
   src/llvm/mng.cpp
+
+  #JIT
+  src/JIT/jit.cpp
 )
 
 target_include_directories(Jaguar PRIVATE src)

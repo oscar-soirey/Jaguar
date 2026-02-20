@@ -1,6 +1,7 @@
 #include "mng.h"
 #include <llvm/IR/Module.h>
 
+
 namespace jaguar::codegen
 {
 	//init every llvm objects
@@ -20,31 +21,6 @@ namespace jaguar::codegen
 		delete context;
 	}
 
-	int CodegenContext::VerifyMembers() const
-	{
-		if (!context) return -1;
-		if (!module) return -1;
-		if (!builder) return -1;
-		return 0;
-	}
-
-	void CodegenContext::RegisterMainFunc()
-	{
-		llvm::FunctionType* mainType = llvm::FunctionType::get(
-		llvm::Type::getInt32Ty(*context),
-		false
-			);
-		llvm::Function* mainFunc = llvm::Function::Create(
-				mainType,
-				llvm::Function::ExternalLinkage,
-				"main",
-				module
-		);
-
-		llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context, "entry", mainFunc);
-		builder->SetInsertPoint(entry);
-	}
-
 	void CodegenContext::AddStandardSymbols()
 	{
 		//print
@@ -58,39 +34,57 @@ namespace jaguar::codegen
 			llvm::Function::Create(printfType,
 													 llvm::Function::ExternalLinkage,
 													 "printf", module);
-		//AddSymbol("print", printfFunc);
+		AddFuncSymbol("print", FuncSymbol(printfFunc));
 	}
 
-	llvm::Type* CodegenContext::GetLLVMType(const std::string& t) const
+	llvm::Type* CodegenContext::GetLLVMType(Jaguar_Type_e t) const
 	{
-		if (t == "int")
+		switch (t)
 		{
-			return builder->getInt32Ty();
-		}
-		if (t == "float")
-		{
-			return builder->getFloatTy();
+			case(INT): return builder->getInt32Ty();
+			case(FLOAT): return builder->getFloatTy();
 		}
 		return nullptr;
 	}
 
-	llvm::Value* CodegenContext::GetSymbol(const char *s)
+	VarSymbol* CodegenContext::GetVarSymbol(const std::string& _name)
 	{
-		auto it = symbolTable.find(s);
-		if (it == symbolTable.end())
+		auto it = var_symbols.find(_name);
+		if (it == var_symbols.end())
 		{
 			return nullptr;
 		}
-		return it->second;
+		return &it->second;
 	}
 
-	void CodegenContext::AddSymbol(const char *s, llvm::AllocaInst* v)
+	void CodegenContext::AddVarSymbol(const std::string& _name, VarSymbol _symbol)
 	{
-		auto it = symbolTable.find(s);
-		if (it == symbolTable.end())
+		auto it = var_symbols.find(_name);
+		if (it == var_symbols.end())
 		{
 			//symbol does not exist
-			symbolTable.emplace(s, v);
+			var_symbols.emplace(_name, _symbol);
+		}
+		//error handling
+	}
+
+	FuncSymbol *CodegenContext::GetFuncSymbol(const std::string &_name)
+	{
+		auto it = func_symbols.find(_name);
+		if (it == func_symbols.end())
+		{
+			return nullptr;
+		}
+		return &it->second;
+	}
+
+	void CodegenContext::AddFuncSymbol(const std::string &_name, FuncSymbol _symbol)
+	{
+		auto it = func_symbols.find(_name);
+		if (it == func_symbols.end())
+		{
+			//name does not exist
+			func_symbols.emplace(_name, _symbol);
 		}
 		//error handling
 	}

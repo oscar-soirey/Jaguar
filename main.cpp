@@ -1,8 +1,33 @@
+/**
+ * Copyright (c) 2025-2026 Oscar Soirey
+ * https://github.com/oscar-soirey/Jaguar
+ *
+ * This project was developed by a single passionate developer.
+ * I ve tried to make everything work smoothly, but there may still be bugs.
+ * If you encounter any issues or have suggestions, please feel free to contact me at:
+ * oscarsoirey.contact@gmail.com
+ * Thank you for your support and understanding
+ *
+ *		####
+ *		  ##
+ *		  ##                 %#%
+ *		  ##       ###################
+ *		  #*##########################*
+ *		     %#########################
+ *		  ###########   ########    ###
+ *		 ######          ######
+ *		###               ##
+ *		####
+ *
+ */
+
+
 #include "src/filesystem/filesystem.h"
 #include "src/lexer/lexer.h"
 #include "src/parser/parser.h"
 #include "src/parser/driver.h"
 #include "src/generated/parser.tab.hpp"
+#include "src/JIT/jit.h"
 
 
 #include <llvm/IR/Module.h>
@@ -40,7 +65,6 @@ int main()
 #ifdef CompileToLLVM
 	//create llvm context and register standard library
 	auto codegen_context = new jaguar::codegen::CodegenContext();
-	codegen_context->RegisterMainFunc();
 	codegen_context->AddStandardSymbols();
 #endif
 
@@ -77,8 +101,12 @@ int main()
 	destBC.close();
 
 
+	jaguar::jit::InitJIT();
+	std::cout << jaguar::jit::ExecuteFromBytecode("output.bc") << std::endl;
+
+
 	//delete context after llvm use
-	delete codegen_context ;
+	delete codegen_context;
 
 #endif
 

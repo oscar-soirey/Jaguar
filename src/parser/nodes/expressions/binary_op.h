@@ -1,6 +1,7 @@
 #pragma once
 
 #include "expression.h"
+#include <llvm/mng.h>
 
 namespace jaguar::parser
 {
@@ -21,6 +22,14 @@ namespace jaguar::parser
 		std::string GetExpressionString() override
 		{
 			return {lexpr->GetExpressionString() + " " + operators_str[operator_] + " " + rexpr->GetExpressionString()};
+		}
+
+  	llvm::Value* Codegen(codegen::CodegenContext *c) override
+		{
+			//Int
+			return c->builder->CreateAdd(lexpr->Codegen(c), rexpr->Codegen(c), "addtmp");
+			//float
+			return c->builder->CreateFAdd(lexpr->Codegen(c), rexpr->Codegen(c), "faddtmp");
 		}
 
   private:
